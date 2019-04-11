@@ -426,4 +426,3 @@ The main differences between a Lock and a synchronized block are:
 
 1) Having a timeout trying to get access to a `synchronized` block is not possible. Using [Lock.tryLock(long timeout, TimeUnit timeUnit)](https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/locks/Lock.html#tryLock%28long,%20java.util.concurrent.TimeUnit%29), it is possible.
 2) The `synchronized` block must be fully contained within a single method. A Lock can have it’s calls to `lock()` and `unlock()` in separate methods.
-

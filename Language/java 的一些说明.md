@@ -2,6 +2,83 @@
 
 - [Java static keyword](<https://www.javatpoint.com/static-keyword-in-java>)
 
+
+
+# Class
+
+## Constructor Rules
+
+There are few mandatory rules for creating the constructors in java.
+
+1. Constructor name MUST be same as name of the class.
+2. There cannot be any return type in constructor definition.
+3. There cannot be any return statement in constructor.
+4. Constructors can be overloaded by different arguments.
+5. If you want to use `super()` i.e. super class constructor then it must be first statement inside constructor.
+
+## Java instance initializer features
+
+The instance initializers have following features.
+
+- We can define **multiple initializers** in a class.
+- All initializers execute in sequence in order they appear in class body.
+- Initializers run after the parent class constructor has been invoked and before executing child class constructor. Please note that Java inserts the default constructor of parent class `super()`, if we do not explicitly provide the constructor as the **first statement** in child class’s constructor.
+- After all the initializers have executed, constructor’s statements are executed.
+- We can use call the constructors of this class and parent classes inside initializers.
+
+## Java instance initialization sequence flow
+
+Based on above given features, let’s draw an outline how the instance initialization of an object flows.
+
+1. Child class constructor is invoked.
+2. Child class constructor has first statement as **super()** (or provided explicit constructor) so parent class constructor is invoked.
+3. Parent class’s initializers are executed in sequence of their appearance.
+4. Parent class constructor statements are executed.
+5. Child class’s initializers are executed in sequence of their appearance.
+6. Child class constructor statements are executed.
+
+## Encapsulation vs Abstraction
+
+> `Encapsulation` is realization of your desired `abstraction`.
+
+**Abstraction is more about hiding the implementation details**. In Java abstraction is achieved through abstract classes and interfaces.
+
+**Encapsulation is about wrapping the implementation (code) and the data it manipulates (variables) within the same class**. A Java class, where all instance variables are private and only the methods within the class can manipulate those variables, is an example of an encapsulated class.
+
+abstraction is essentially an idea, which helps in setting the guidelines. Encapsulation is the mechanism by which we achieve the desired abstraction.
+
+In short, from OOAD perspective:
+
+- *Abstraction is more about ‘**What**‘ a class can do. [**Idea**]*
+- *Encapsulation is more about ‘**How**‘ to achieve that functionality. [**Implementation**]*
+
+## Inheritance
+
+- Inheritance is also known **IS-A** relationship.
+- It provides child class the ability to inherit non-private members of parent class.
+- In java, inheritance is achieved via `extends` keyword.
+- From [Java 8](https://howtodoinjava.com/java-8-tutorial/) onward, you can use interfaces with default methods to achieve multiple inheritance.
+- Member fields are accessed from reference type class.
+- Member methods are accessed from actual instance types.
+
+## Polymorphism
+
+In java language, polymorphism is essentially considered into two versions.
+
+1. Compile time polymorphism (static binding or method overloading)
+2. Runtime polymorphism (dynamic binding or method overriding)
+
+**Summary**
+
+1. Polymorphism is the ability to create a variable, a function, or an object that has more than one form.
+2. In java, polymorphism is divided into two parts : method overloading and method overriding.
+3. Some may argue that method overloading is not polymorphism. Then what does the term compile time “polymorphism” means??
+4. Another term operator overloading is also there, e.g. “+” operator can be used to add two integers as well as concat two sub-strings. Well, this is the only available support for operator overloading in java, and you can not have your own custom defined operator overloading in java.
+
+
+
+
+
 # Static
 
 ## What is Static Variable in Java?

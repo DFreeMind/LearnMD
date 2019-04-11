@@ -71,3 +71,108 @@ If you have fewer connections with very high bandwidth, sending a lot of data at
 
 
 
+# Write to File
+
+## Write File using BufferedWritter
+
+t is advisable to wrap a `BufferedWriter` around any `Writer` whose `write()` operations may be costly, such as `FileWriter` and `OutputStreamWriter`.
+
+As it buffers before writing, so it result in **less IO operations**, so it improve the performance.
+
+```java
+public static void usingBufferedWritter() throws IOException{
+    String fileContent = "Hello Learner !! Welcome to howtodoinjava.com.";
+     
+    BufferedWriter writer = new BufferedWriter(new FileWriter("c:/temp/samplefile1.txt"));
+    writer.write(fileContent);
+    writer.close();
+}
+```
+
+
+
+## Write File using FileWriter/PrintWriter
+
+`FileWriter` the most clean way to write files. Syntax is self explanatory and easy to read and understand. `FileWriter` writes directly into file (***less performance***) and should be used only when number of writes are less.
+
+```java
+`public` `static` `void` `usingFileWriter() ``throws` `IOException``{``    ``String fileContent = ``"Hello Learner !! Welcome to howtodoinjava.com."``;``    ` `    ``FileWriter fileWriter = ``new` `FileWriter(``"c:/temp/samplefile2.txt"``);``    ``fileWriter.write(fileContent);``    ``fileWriter.close();``}`
+```
+
+## Write File using FileOutputStream
+
+Use `FileOutputStream` to **write binary data to a file**. `FileOutputStream` is meant for writing streams of raw bytes such as image data. For writing streams of characters, consider using `FileWriter`.
+
+```java
+public static void usingFileOutputStream() throws IOException{
+    String fileContent = "Hello Learner !! Welcome to howtodoinjava.com.";
+     
+    FileOutputStream outputStream = new FileOutputStream("c:/temp/samplefile4.txt");
+    byte[] strToBytes = fileContent.getBytes();
+    outputStream.write(strToBytes);
+  
+    outputStream.close();
+}
+```
+
+## Write File using DataOutputStream
+
+`DataOutputStream` lets an application **write primitive Java data types** to an output stream in a portable way. An application can then use a data input stream to read the data back in.
+
+```java
+public static void usingDataOutputStream() throws IOException{
+    String fileContent = "Hello Learner !! Welcome to howtodoinjava.com.";
+     
+    FileOutputStream outputStream = new FileOutputStream("c:/temp/samplefile5.txt");
+    DataOutputStream dataOutStream = new DataOutputStream(new BufferedOutputStream(outputStream));
+    dataOutStream.writeUTF(fileContent);
+  
+    dataOutStream.close();
+}
+```
+
+## Write File using FileChannel
+
+`FileChannel` can be used for reading, writing, mapping, and manipulating a file. If you are dealing with large files, `FileChannel` can be faster than standard IO.
+
+File channels are safe for use by multiple concurrent threads.
+
+```java
+public static void usingFileChannel() throws IOException{
+    String fileContent = "Hello Learner !! Welcome to howtodoinjava.com.";
+     
+    RandomAccessFile stream = new RandomAccessFile("c:/temp/samplefile6.txt", "rw");
+    FileChannel channel = stream.getChannel();
+    byte[] strBytes = fileContent.getBytes();
+    ByteBuffer buffer = ByteBuffer.allocate(strBytes.length);
+    buffer.put(strBytes);
+    buffer.flip();
+    channel.write(buffer);
+    stream.close();
+    channel.close();
+}
+```
+
+## Summary
+
+1. If we try to write to a file that doesn’t exist, the file will be created first and no exception will be thrown (except using `Path` method).
+2. Always close the output stream after writing the file content to release all resources. It will also help in not corrupting the file.
+3. Use `PrintWriter` is used to write formatted text.
+4. Use `FileOutputStream` to write binary data.
+5. Use `DataOutputStream` to write primitive data types.
+6. Use `FileChannel` to write larger files.
+
+
+
+# Read File
+
+use `Files.readAllBytes()`, `Files.lines()` (to **read line by line**) and `FileReader` & `BufferedReader` to **read text file to String**.
+
+
+
+
+
+
+
+
+
