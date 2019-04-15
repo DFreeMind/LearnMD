@@ -376,6 +376,777 @@ Next, a question may come if we have abstract methods and main class both, we ma
 
 [Generics](https://docs.oracle.com/javase/tutorial/extra/generics/) in java were introduced as one of [**features in JDK 5**](https://howtodoinjava.com/java-5/).
 
+“**Java Generics**” is a technical term denoting a set of language features related to the definition and use of generic types and methods . In java, Generic types or methods differ from regular types and methods in that they have type parameters.
+
+> “Java Generics are a language feature that allows for definition and use of generic types and methods.”
+
+Generic types are instantiated to form parameterized types by providing actual type arguments that replace the formal type parameters. A class like `LinkedList<E>` is a generic type, that has a type parameter E . Instantiations, such as `LinkedList<Integer>` or a `LinkedList<String>`, are called parameterized types, and String and Integer are the respective actual type arguments.
+
+## Why Generics
+
+Programmers like us often wanted to specify that a collection contains elements only of a certain type e.g. `Integer` or `String` or `Employee`. In original collection framework, having homogeneous collections was not possible without adding extra checks before adding some checks in code. Generics were introduced to remove this limitation to be very specific. They add this type checking of parameters in your code at compile time, automatically. This saves us writing a lot of un-necessary code which actually does not add any value in run-time, if written correctly.
+
+> “In layman,this term, generics force type safety in java language.”
+
+Without this type safety, your code could have infected by various bugs which get revealed only in runtime. Using generics, makes them highlighted in compile time itself and make you code robust even before you get the bytecode of your java sourcecode files.
+
+> “Generics add stability to your code by making more of your bugs detectable at compile time.”
+
+## How Generics works
+
+In the heart of generics is “[**type safety**](https://en.wikipedia.org/wiki/Type_safety)“. What exactly is type safety? It’s just a guarantee by compiler that if correct Types are used in correct places then there should not be any `ClassCastException` in runtime. A usecase can be list of `Integer`i.e. `List<Integer>`. If you declare a list in java like `List<Integer>`, then java guarantees that it will detect and report you any attempt to insert any non-integer type into above list.
+
+```java
+List<Integer> list = new ArrayList<Integer>();
+ 
+list.add(1000);     //works fine
+ 
+list.add("lokesh"); //compile time error;
+```
+
+When you write above code and compile it, you will get below error: “*The method add(Integer) in the type List<Integer> is not applicable for the arguments (String)*“. Compiler warned you. This exactly is generics sole purpose i.e. Type Safety.
+
+Another important term in java generics is “[**type erasure**](https://en.wikipedia.org/wiki/Type_erasure)“. It essentially means that all the extra information added using generics into sourcecode will be removed from bytecode generated from it. Inside bytecode, it will be old java syntax which you will get if you don’t use generics at all. This necessarily helps in generating and executing code written prior java 5 when generics were not added in language.
+
+```java
+List list = new ArrayList();
+ 
+list.add(1000); 
+```
+
+Second part is getting byte code after removing second line from above example. If you compare the bytecode of above example with/without generics, then there will not be any difference. Clearly compiler removed all generics information. So, above code is very much similar to below code without generics.
+
+Another example：
+
+```java
+import java.util.ArrayList;
+class Demo{
+	public static void main(String[] args) {
+		ArrayList<Number> integers = new ArrayList<Number>();
+		integers.add(12);
+		integers.add(12L);
+		integers.add(12d);
+
+		int[] ints = new int[3];
+		ints[0]=1;
+		ints[1]=2;
+	}
+}
+```
+
+![image](https://ws2.sinaimg.cn/large/69d4185bly1g236eo4q6nj20g309fwg8.jpg)
+
+through the bytecode tool, we can see the details:
+
+```java
+import java.util.ArrayList;
+class Demo{
+  public static void main(String[] paramArrayOfString){
+    ArrayList localArrayList = new ArrayList();
+    localArrayList.add(Integer.valueOf(12));
+    localArrayList.add(Long.valueOf(12L));
+    localArrayList.add(Double.valueOf(12.0D));
+    
+    int[] arrayOfInt = new int[3];
+    arrayOfInt[0] = 1;
+    arrayOfInt[1] = 2;
+  }
+}
+```
+
+> “Precisely, Generics in Java is nothing but a syntactic sugar to your code for Type Safety and all such type information is erased by Type Erasure feature by compiler.”
+
+## Types of Generics
+
+### Generic Type Class or Interface
+
+A class is generic if it declares one or more type variables. These type variables are known as the type parameters of the class.
+
+`DemoClass` is simple java class, which have one property t (can be more than one also); and type of property is Object.
+
+```java
+class DemoClass {
+   private Object t;
+ 
+   public void set(Object t) { this.t = t; }
+    
+   public Object get() { return t; }
+}
+```
+
+Here we want that once initialized the class with a certain type, class should be used with that particular type only. e.g. If we want one instance of class to hold value t of type ‘`String`‘, then programmer should set and get the only `String` type. Since we have declared property type to `Object`, there is no way to enforce this restriction. A programmer can set any object; and can expect any return value type from get method since all java types are subtypes of `Object` class.
+
+To enforce this type restriction, we can use generics as below:
+
+```java
+class DemoClass<T> {
+   //T stands for "Type"
+   private T t;
+ 
+   public void set(T t) { this.t = t; }
+    
+   public T get() { return t; }
+}
+```
+
+Now we can be assured that class will not be misused with wrong types. A sample usage of `DemoClass` will look like this:
+
+```java
+DemoClass<String> instance = new DemoClass<String>();
+instance.set("lokesh");   //Correct usage
+instance.set(1);        //This will raise compile time error
+```
+
+Above analogy is true for interface as well. Let’s quickly look at an example to understand, how generics type information can be used in interfaces in java.
+
+```java
+//Generic interface definition
+interface DemoInterface<T1, T2>{
+   T2 doSomeOperation(T1 t);
+   T1 doReverseOperation(T2 t);
+}
+ 
+//A class implementing generic interface
+class DemoClass implements DemoInterface<String, Integer>{
+   public Integer doSomeOperation(String t){
+      //some code
+   }
+   public String doReverseOperation(Integer t){
+      //some code
+   }
+}
+```
+
+### Generic Type Method or Constructor
+
+Generic methods are much similar to generic classes. They are different only in one aspect that scope of type information is inside method (or constructor) only. Generic methods are methods that introduce their own type parameters.
+
+```java
+public static <T> int countAllOccurrences(T[] list, T item) {
+   int count = 0;
+   if (item == null) {
+      for ( T listItem : list )
+         if (listItem == null)
+            count++;
+   } else {
+      for ( T listItem : list )
+         if (item.equals(listItem))
+            count++;
+   }
+   return count;
+}  
+```
+
+If you pass a list of `String` and another string to search in this method, it will work fine. But if you will try to find an `Number` into list of `String`, it will give compile time error.
+
+Same as above can be example of generic constructor. 
+
+```java
+class Dimension<T> {
+   private T length;
+   private T width;
+   private T height;
+ 
+   //Generic constructor
+   public Dimension(T length, T width, T height){
+      super();
+      this.length = length;
+      this.width = width;
+      this.height = height;
+   }
+}
+```
+
+In this example, `Dimension` class’s constructor has the type information also. So you can have an instance of dimension with all attributes of a single type only.
+
+## Generic Type Arrays
+
+Array in any language have same meaning i.e. an array is a collection of similar type of elements. In java, pushing any incompatible type in an array on runtime will throw `ArrayStoreException`. It means array preserve their type information in runtime, and generics use type erasure or remove any type information in runtime. Due to above conflict, instantiating a generic array in java is not permitted.
+
+```java
+public class GenericArray<T> {
+    // this one is fine
+    public T[] notYetInstantiatedArray;
+  
+    // causes compiler error; Cannot create a generic array of T
+    public T[] array = new T[5];
+}
+```
+
+In the same line as above generic type classes and methods, we can have generic arrays in java. As we know that an array is a collection of similar type of elements and pushing any incompatible type will throw `ArrayStoreException` in runtime; which is not the case with `Collection` classes.
+
+```java
+`Object[] array = ``new` `String[``10``];``array[``0``] = ``"lokesh"``;``array[``1``] = ``10``;      ``//This will throw ArrayStoreException`
+```
+
+Above mistake is not very hard to make. It can happen anytime. So it’s better to provide the type information to array also so that error is caught at compile time itself.
+
+Another reason why arrays does not support generics is that arrays are co-variant, which means that an array of supertype references is a supertype of an array of subtype references. That is, `Object[]` is a supertype of `String[]` and a string array can be accessed through a reference variable of type `Object[]`.
+
+```java
+`Object[] objArr = ``new` `String[``10``];  ``// fine``objArr[``0``] = ``new` `String();`
+```
+
+## Generics with Wildcards
+
+In generic code, the question mark (?), called the wildcard, represents an unknown type. **A wildcard parameterized type is an instantiation of a generic type where at least one type argument is a wildcard.** Examples of wildcard parameterized types are `Collection<?>`, `List<? extends Number>`, `Comparator<? super String>` and `Pair<String,?>`. The wildcard can be used in a variety of situations: as the type of a parameter, field, or local variable; sometimes as a return type (though it is better programming practice to be more specific). The wildcard is never used as a type argument for a generic method invocation, a generic class instance creation, or a supertype.
+
+Having wildcards at difference places have different meanings as well. e.g.
+
+- **Collection** denotes all instantiations of the Collection interface regardless of the type argument.
+- **List** denotes all list types where the element type is a subtype of Number.
+- **Comparator<? super String>** denotes all instantiations of the Comparatorinterface for type argument types that are supertypes of String.
+
+```java
+Collection<?> coll = new ArrayList<String>();
+//OR
+List<? extends Number> list = new ArrayList<Long>();
+//OR
+Pair<String,?> pair = new Pair<String,Integer>();
+```
+
+And below are not valid uses of wildcards:
+
+```java
+List<? extends Number> list = new ArrayList<String>();  //String is not subclass of Number; so error
+//OR
+Comparator<? super String> cmp = new RuleBasedCollator(new Integer(100)); //Integer is not superclass of String
+```
+
+#### Bounded wildcard parameterized type
+
+Bounded wildcards put some restrictions over possible types, you can use to instantiate a parametrized type. This restriction is enforced using keywords “super”(lower bounded) and “extends”(upper bounded). To differentiate more clearly, let’s divide them into upper bounded wildcards and lower bounded wildcards.
+
+## What is not allowed to do with Generics
+
+#### You can’t have static field of type
+
+You can not define a static generic parameterized member in your class. Any attempt to do so will generate compile time error: Cannot make a static reference to the non-static type T.
+
+```java
+public class GenericsExample<T>{
+   private static T member; //This is not allowed
+}
+```
+
+#### You can not create an instance of T
+
+Any attempt to create an instance of T will fail with error: Cannot instantiate the type T.
+
+```java
+public class GenericsExample<T>{
+   public GenericsExample(){
+      new T();
+   }
+}
+```
+
+#### Generics are not compatible with primitives in declarations
+
+Yes, it’s true. You can’t declare generic expression like List or Map<String, double>. Definitely you can use the wrapper classes in place of primitives and then use primitives when passing the actual values. These value primitives are accepted by using auto-boxing to convert primitives to respective wrapper classes.
+
+```java
+final List<int> ids = new ArrayList<>();    //Not allowed
+ 
+final List<Integer> ids = new ArrayList<>(); //Allowed
+```
+
+#### You can’t create Generic exception class
+
+Sometimes, programmer might be in need of passing an instance of generic type along with exception being thrown. This is not possible to do in Java.
+
+```java
+// causes compiler error
+public class GenericException<T> extends Exception {}
+```
+
+When you try to create such an exception, you will end up with message like this: The generic class `GenericException` may not subclass `java.lang.Throwable`.
+
+[Why doesn't Java allow generic subclasses of Throwable?](https://stackoverflow.com/questions/501277/why-doesnt-java-allow-generic-subclasses-of-throwable)
+
+[为什么泛型类无法继承自 Throwable](<https://blog.csdn.net/ziwang_/article/details/56288597>)
+
+As mark said, the types are not reifiable, which is a problem in the following case:
+
+```java
+try {
+   doSomeStuff();
+} catch (SomeException<Integer> e) {
+   // ignore that
+} catch (SomeException<String> e) {
+   crashAndBurn()
+}
+```
+
+Both `SomeException<Integer>` and `SomeException<String>` are erased to the same type, there is no way for the JVM to distinguish the exception instances, and therefore no way to tell which `catch` block should be executed.
+
+we should know that  generic class can't extend from `Throwable` but generic can extend from `Throwable`, example:
+
+```java
+// causes compiler error
+public class GenericException<T> extends Exception {}
+// but this valid
+public class Test<T extends Throwable> {}
+```
+
+## Generics PECS
+
+Look at two methods in java collection APIS.
+
+This method is responsible for adding all members of collection “c” into another collection where this method is called.
+
+```java
+boolean addAll(Collection<? extends E> c);
+```
+
+This method is called for adding “elements” to collection “c”.
+
+```java
+public static <T> boolean addAll(Collection<? super T> c, T... elements);
+```
+
+Both seems to be doing simple thing, so why they both have different syntax.
+
+### Understanding <? extends T>
+
+This is the first part of **PECS** i.e. **PE (Producer extends)**. To more relate it to real life terms, let’s use an analogy of a basket of fruits (i.e. collection of fruits). When we pick a fruit from basket, then we want to be sure that we are taking out only fruit only and nothing else; so that we can write generic code like this:
+
+```java
+Fruit get = fruits.get(0);
+```
+
+In above case, we need to declare the collection of fruits as `List<? extends Fruit>`. e.g.
+
+```java
+class Fruit {
+   @Override
+   public String toString() {
+      return "I am a Fruit !!";
+   }
+}
+ 
+class Apple extends Fruit {
+   @Override
+   public String toString() {
+      return "I am an Apple !!";
+   }
+}
+ 
+public class GenericsExamples{
+   public static void main(String[] args){
+      //List of apples
+      List<Apple> apples = new ArrayList<Apple>();
+      apples.add(new Apple());
+       
+      //We can assign a list of apples to a basket of fruits;
+      //because apple is subtype of fruit
+      List<? extends Fruit> basket = apples;
+       
+      //Here we know that in basket there is nothing but fruit only
+      for (Fruit fruit : basket){
+         System.out.println(fruit);
+      }
+       
+      //basket.add(new Apple()); //Compile time error
+      //basket.add(new Fruit()); //Compile time error
+   }
+}
+```
+
+Look at the for loop above. It ensures that whatever it comes out from basket is definitely going to be a fruit; so you iterate over it and simply cast it a Fruit. Now in last two lines, I tried to add an `Apple` and then a `Fruit` in basket, but compiler didn’t allowed me. Why?
+
+The reason is pretty simple, if we think about it; the `<? extends Fruit>` wildcard tells the compiler that we’re dealing with a subtype of the type Fruit, but **we cannot know which fruit as there may be multiple subtypes**. Since there’s no way to tell, and we need to guarantee type safety (invariance), you won’t be allowed to put anything inside such a structure.
+
+On the other hand, since we know that whichever type it might be, it will be a subtype of `Fruit`, we can get data out of the structure with the guarantee that it will be a `Fruit`.
+
+> In above example, we are taking elements out of collection “`List<? extends Fruit> basket`“; so here this basket is actually producing the elements i.e. fruits. In simple words, when you want to ONLY retrieve elements out of a collection, treat it as a producer and use “`? extends T>`” syntax. “**Producer extends**” now should make more sense to you.
+
+### Understanding <? super T>
+
+Now look at above usecase in different way. Let’s assume we are defining a method where we will only be adding different fruits inside this basket. Just like we saw the method in start of post “`addAll(Collection<? super T> c, T... elements)`“. In such case, basket is used for storing the elements so it should be called **consumer of elements**.
+
+```java
+class AsianApple extends Apple {
+   @Override
+   public String toString() {
+      return "I am an AsianApple !!";
+   }
+}
+ 
+public class GenericsExamples{
+   public static void main(String[] args){
+      //List of apples
+      List<Apple> apples = new ArrayList<Apple>();
+      apples.add(new Apple());
+       
+      //We can assign a list of apples to a basket of apples
+      List<? super Apple> basket = apples;
+       
+      basket.add(new Apple());      //Successful
+      basket.add(new AsianApple()); //Successful
+      basket.add(new Fruit());      //Compile time error
+   }
+}
+```
+
+We are able to add apple and even Asian apple inside basket, but we are not able to add Fruit (super type of apple) to basket. Why?
+
+Reason is that basket is a **reference to a List of something that is a supertype of Apple**. Again, **we cannot know which supertype it is**, but we know that Apple and any of its subtypes (which are subtype of Fruit) can be added to be without problem (*you can always add a subtype in collection of supertype*). So, now we can add any type of Apple inside basket.
+
+What about getting data out of such a type? It turns out that you the only thing you can get out of it will be `Object` instances: since we cannot know which supertype it is, the compiler can only guarantee that it will be a reference to an `Object`, since `Object` is the supertype of any Java type.
+
+> In above example, we are putting elements inside collection “`List<? super Apple> basket`“; so here this basket is actually consuming the elements i.e. apples. In simple words, when you want to ONLY add elements inside a collection, treat it as a consumer and use “`? super T>`” syntax. Now, “**Consumer super**” also should make more sense to you.
+
+### Summary
+
+1. Use the `<? extends T>` wildcard if you need to retrieve object of type T from a collection.
+2. Use the `<? super T>` wildcard if you need to put objects of type T in a collection.
+3. If you need to satisfy both things, well, don’t use any wildcard. As simple as it is.
+4. In short, remember the term **PECS. Producer extends Consumer super**. Really easy to remember.
+
+
+
+# Reflection
+
+[Java Reflection API Tutorial with Example](<https://www.guru99.com/java-reflection-api.html>)
+
+Java Reflection is the process of analyzing and modifying all the capabilities of a class at runtime. Reflection API in Java is used to manipulate class and its members which include fields, methods, constructor, etc. at runtime.
+
+One advantage of reflection API in Java is, it can manipulate private members of the class too.
+
+**Class in java.lang.reflect Package**
+
+- **Field**: This class is used to gather declarative information such as datatype, access modifier, name and value of a variable.
+- **Method**: This class is used to gather declarative information such as access modifier, return type, name, parameter types and exception type of a method.
+- **Constructor**: This class is used to gather declarative information such as access modifier, name and parameter types of a constructor.
+- **Modifier**: This class is used to gather information about a particular access modifier.
+
+**Methods used in java.lang.Class**
+
+- **Public String getName ()**: Returns the name of the class.
+- **public Class getSuperclass()**: Returns the super class reference
+- **Public Class[] getInterfaces()** : Returns an array of interfaces implemented by the specified class
+- **Public in getModifiers ():** Returns an integer value representing the modifiers of the specified class which needs to be passed as a parameter to "**public static String toString (int i )"** method which returns the access specifier for the given class.
+
+To get the information about variables , methods and contructors of a class. First we need to create an object of the class. There is several methods to get an object of class, example:
+
+```java
+class ClassObjectCreation {
+    public static void main (String[] args) throws ClassNotFoundException {
+        //1 - By using Class.forname() method
+        Class c1 = Class.forName("ClassObjectCreation");
+        //2- By using getClass() method
+        ClassObjectCreation guru99Obj = new ClassObjectCreation();
+        Class c2 = guru99Obj.getClass();
+        //3- By using .class
+        Class c3= ClassObjectCreation.class;
+    }
+}
+```
+
+## Get Metadata of Class
+
+We will get the metadata of below class named Guru99Base.class:
+
+```java
+import java.io.Serializable;
+public abstract class DemoBase implements Serializable, Cloneable {}
+```
+
+![image](https://wx4.sinaimg.cn/large/69d4185bly1g23isp0ar7j20lx03r74n.jpg)
+
+1. Name of the class is: DemoBase
+2. It's access modifiers are: public and abstract
+3. It has implemented interfaces: Serializable and Cloneable
+4. Since it has not extended any class explicitly, it's super class is: java.lang.Object
+
+```java
+import java.lang.reflect.Modifier;
+
+public class DemoGetClassMetadata {
+
+    public static int demoInt = 1111;
+    static int demoInt2 = 222;
+    static String demoString = "weduoo.com";
+    static String demoString2 = "learn reflection API";
+    // private String demoPrivate = "weduoo.cn";
+
+    public static void main(String[] args) {
+        Class democls = DemoBase.class;
+
+        // print name of the class
+        System.out.println("Name of the class is:" + democls.getName());
+
+        // print super class name
+        System.out.println("Name of the super class is:" + democls.getSuperclass().getName());
+
+        // get the list of implemented interfaces in the form of Class array using
+        // getInterface() method
+        Class[] list = democls.getInterfaces();
+        for (Class demo: list) {
+            System.out.println("interfaces :" + demo.getName());
+        }
+
+        // Get access modifiers using getModifiers() method and toString() method of
+        // java.lang.reflect.Modifier class
+        int mo = democls.getModifiers();
+        System.out.println("Access modifiers of the class∂ are:" + Modifier.toString(mo));
+
+    }
+}
+
+```
+
+```
+Name of the class is:com.weduoo.reflect.DemoBase
+Name of the super class is:java.lang.Object
+interfaces :java.io.Serializable
+interfaces :java.lang.Cloneable
+Access modifiers of the class∂ are:public abstract
+```
+
+## Get Metadata of Variable
+
+- `getFields()` method returns metadata of the public variable from the specified class *as well as from its super class*.
+
+- `getDeclaredFields()` method returns metadata of the all the variables from the specified class only.
+
+- `getName()` get the name of the variables
+
+- `getType()` get the datatype of the variables
+
+-  `get (Field)` get the value of the variable
+- `getModifier()、Modifier.toString(int i)` get the access modifiers of the variables 
+
+```java
+public class DemoVarivableMetadataTest {
+    public static void main(String[] args) throws IllegalAccessException {
+        // create Class object for DemoGetClassMetadata.class
+        DemoGetClassMetadata democls = new DemoGetClassMetadata();
+        Class aClass = democls.getClass();
+
+        // get the metadata of all the fields of the class DemoGetClassMetadata
+        Field[] declaredFields = aClass.getDeclaredFields();
+
+        // print name, datatype, access modifiers and values of the
+        // variables of the specified class
+        System.out.println("declared fields---->");
+        for (Field field : declaredFields ) {
+            System.out.println("Variable Name:" + field.getName());
+            System.out.println("datatype of the Variable:" + field.getType());
+            int mod = field.getModifiers();
+            System.out.println("Access Modifiers of the Variable:" + Modifier.toString(mod));
+            System.out.println("Value of the variable:" + field.get(field));
+            System.out.println("*******************");
+        }
+    }
+}
+```
+
+```
+declared fields---->
+Variable Name:demoInt
+datatype of the Variable:int
+Access Modifiers of the Variable:public static
+Value of the variable:1111
+*******************
+Variable Name:demoInt2
+datatype of the Variable:int
+Access Modifiers of the Variable:static
+Value of the variable:222
+*******************
+Variable Name:demoString
+datatype of the Variable:class java.lang.String
+Access Modifiers of the Variable:static
+Value of the variable:weduoo.com
+*******************
+Variable Name:demoString2
+datatype of the Variable:class java.lang.String
+Access Modifiers of the Variable:static
+Value of the variable:learn reflection API
+*******************
+```
+
+##  Get Metadata of Method
+
+- `getMethods()` method returns metadata of the public methods from the specified class as well as from its super class.
+
+- `getDeclaredMethods()` method returns metadata of the all the methods from the specified class only.
+
+- `getName()` get the name of the method
+
+- `getReturnType()` Get the return type of the method 
+
+-  `getModifiers() 、 Modifiers.toString(int i)` Get access modifiers of the methods
+
+- `getParameterTypes()` Get method parameter types which returns a class array.
+
+- `getExceptionTypes()` Get thrown exception which returns a class array
+
+```java
+import java.sql.SQLException;
+
+public class DemoMethodMetadata {
+    public void demoAdd(int firstElement, int secondElement , String result)
+            throws ClassNotFoundException, ClassCastException{
+        System.out.println("Demo method for Reflextion  API");
+    }
+    public String demoSearch(String searchString)
+            throws ArithmeticException, InterruptedException{
+        System.out.println("Demo method for Reflection API");
+        return null;
+    }
+    public void demoDelete(String deleteString)
+            throws SQLException{
+        System.out.println("Demo method for Reflection API");
+    }
+}
+```
+
+```java
+public class DemoMethodMetadataTest {
+    public static void main (String[] args) {
+        // Create Class object for Guru99Method MetaData.class
+        Class classObj = DemoMethodMetadata.class;
+
+        // Get the metadata or information of all the methods of the class using getDeclaredMethods()
+        Method[] demoMethods = classObj.getDeclaredMethods();
+
+        for(Method method : demoMethods) {
+            // Print the method names
+            System.out.println("Name of the method : "+ method.getName());
+
+            // Print return type of the methods
+            System.out.println("Return type of the method : "+ method.getReturnType());
+
+            //Get the access modifier list and print
+            int modifier = method.getModifiers();
+            System.out.println("Method access modifiers : "+ Modifier.toString(modifier));
+
+            // Get and print parameters of the methods
+            Class[] paramList= method.getParameterTypes();
+            System.out.print ("Method parameter types : ");
+            for (Class class1 : paramList){
+                System.out.println(class1.getName()+" ");
+            }
+            System.out.println();
+
+            // Get and print exception thrown by the method
+            Class[] exceptionList = method.getExceptionTypes();
+            System.out.print("Excpetion thrown by method :");
+            for (Class class1 : exceptionList) {
+                System.out.println (class1.getName() +" ");
+            }
+            System.out.println("* * * * * * * * * * * * * * * * * * * ");
+        }
+    }
+}
+```
+
+```
+com.weduoo.reflect.DemoMethodMetadataTest
+Name of the method : demoAdd
+Return type of the method : void
+Method access modifiers : public
+Method parameter types : int 
+int 
+java.lang.String 
+
+Excpetion thrown by method :java.lang.ClassNotFoundException 
+java.lang.ClassCastException 
+* * * * * * * * * * * * * * * * * * * 
+Name of the method : demoSearch
+Return type of the method : class java.lang.String
+Method access modifiers : public
+Method parameter types : java.lang.String 
+
+Excpetion thrown by method :java.lang.ArithmeticException 
+java.lang.InterruptedException 
+* * * * * * * * * * * * * * * * * * * 
+Name of the method : demoDelete
+Return type of the method : void
+Method access modifiers : public
+Method parameter types : java.lang.String 
+
+Excpetion thrown by method :java.sql.SQLException 
+* * * * * * * * * * * * * * * * * * * 
+```
+
+## Get Metadata of Constructors
+
+- `getConstructors()` Get all the constructor information in the Constructor array
+
+   
+
+```java
+public class DemoConstructor {
+    public DemoConstructor(int no) throws ClassCastException ,ArithmeticException{  }
+    public DemoConstructor(int no, String name) throws RemoteException, SQLException {  }
+    public DemoConstructor(int no, String name, String address) throws InterruptedException{  }
+}
+
+public class DemoConstructorTest {
+    public static void main (String[] args) {
+        // Create Class object for demoConstructor.class
+        Class demoClass = DemoConstructor.class;
+
+        // Get all the constructor information in the Constructor array
+        Constructor[] demoConstructorList = demoClass.getConstructors();
+
+        for (Constructor constructor : demoConstructorList) {
+            // Print all name of each constructor
+            System.out.println("Constrcutor name : "+ constructor.getName());
+
+            //Get and print access modifiers of each constructor
+            int demoModifiers= constructor.getModifiers();
+            System.out.println("Constrctor modifier : "+ Modifier.toString(demoModifiers));
+
+            // Get and print parameter types
+            Class[] demoParamList=constructor.getParameterTypes();
+            System.out.print ("Constrctor parameter types :");
+            for (Class class1 : demoParamList) {
+                System.out.println(class1.getName() +" ");
+            }
+
+            // Get and print exception thrown by constructors
+            Class[] demoExceptionList=constructor.getExceptionTypes();
+            System.out.println("Exception thrown by constructors :");
+            for (Class class1 : demoExceptionList) {
+                System.out.println(class1.getName() +" ");
+            }
+            System.out.println("************************");
+        }
+    }
+}
+```
+
+```
+com.weduoo.reflect.DemoConstructorTest
+Constrcutor name : com.weduoo.reflect.DemoConstructor
+Constrctor modifier : public
+Constrctor parameter types :int 
+Exception thrown by constructors :
+java.lang.ClassCastException 
+java.lang.ArithmeticException 
+************************
+Constrcutor name : com.weduoo.reflect.DemoConstructor
+Constrctor modifier : public
+Constrctor parameter types :int 
+java.lang.String 
+Exception thrown by constructors :
+java.rmi.RemoteException 
+java.sql.SQLException 
+************************
+Constrcutor name : com.weduoo.reflect.DemoConstructor
+Constrctor modifier : public
+Constrctor parameter types :int 
+java.lang.String 
+java.lang.String 
+Exception thrown by constructors :
+java.lang.InterruptedException 
+************************
+```
+
 
 
 # Other
