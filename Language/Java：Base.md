@@ -810,9 +810,11 @@ What about getting data out of such a type? It turns out that you the only thing
 
 [Java Reflection API Tutorial with Example](<https://www.guru99.com/java-reflection-api.html>)
 
+[Java Reflection Tutorial](<http://tutorials.jenkov.com/java-reflection/index.html>)
+
 Java Reflection is the process of analyzing and modifying all the capabilities of a class at runtime. Reflection API in Java is used to manipulate class and its members which include fields, methods, constructor, etc. at runtime.
 
-One advantage of reflection API in Java is, it can manipulate private members of the class too.
+Java Reflection is quite powerful and can be very useful. For instance, Java Reflection can be used to map properties in JSON files to getter / setter methods in Java objects, like [Jackson, GSON, Boon etc.](http://tutorials.jenkov.com/java-json/index.html)does. Or, Reflection can be used to map the column names of a [JDBC](http://tutorials.jenkov.com/jdbc/index.html) ResultSet to getter / setter methods in a Java object.
 
 **Class in java.lang.reflect Package**
 
@@ -870,7 +872,10 @@ public class DemoGetClassMetadata {
     static String demoString = "weduoo.com";
     static String demoString2 = "learn reflection API";
     // private String demoPrivate = "weduoo.cn";
-
+		public void setDemoInt2(int int2){
+        demoInt2 = int2;
+    }
+  
     public static void main(String[] args) {
         Class democls = DemoBase.class;
 
@@ -924,6 +929,9 @@ public class DemoVarivableMetadataTest {
         // create Class object for DemoGetClassMetadata.class
         DemoGetClassMetadata democls = new DemoGetClassMetadata();
         Class aClass = democls.getClass();
+      
+      	DemoGetClassMetadata metadata = new DemoGetClassMetadata();
+        metadata.setDemoInt2(123);
 
         // get the metadata of all the fields of the class DemoGetClassMetadata
         Field[] declaredFields = aClass.getDeclaredFields();
@@ -936,7 +944,7 @@ public class DemoVarivableMetadataTest {
             System.out.println("datatype of the Variable:" + field.getType());
             int mod = field.getModifiers();
             System.out.println("Access Modifiers of the Variable:" + Modifier.toString(mod));
-            System.out.println("Value of the variable:" + field.get(field));
+            System.out.println("Value of the variable:" + field.get(metadata));
             System.out.println("*******************");
         }
     }
@@ -953,7 +961,7 @@ Value of the variable:1111
 Variable Name:demoInt2
 datatype of the Variable:int
 Access Modifiers of the Variable:static
-Value of the variable:222
+Value of the variable:123
 *******************
 Variable Name:demoString
 datatype of the Variable:class java.lang.String
@@ -1146,6 +1154,39 @@ Exception thrown by constructors :
 java.lang.InterruptedException 
 ************************
 ```
+
+## Dynamic Proxies
+
+Using Java Reflection you create dynamic implementations of interfaces at runtime. You do so using the class `java.lang.reflect.Proxy`. Dynamic proxies are known to be used for at least the following purposes:
+
+- Database Connection and Transaction Management
+- Dynamic Mock Objects for Unit Testing
+- Adaptation of DI Container to Custom Factory Interfaces
+- AOP-like Method Interception
+
+You create dynamic proxies using the `Proxy.newProxyInstance()` method. The `newProxyInstance()` methods takes 3 parameters:
+
+1. The `ClassLoader` that is to "load" the dynamic proxy class.
+2. An array of interfaces to implement.
+3. An `InvocationHandler` to forward all methods calls on the proxy to.
+
+```java
+InvocationHandler handler = new MyInvocationHandler();
+MyInterface proxy = (MyInterface) Proxy.newProxyInstance(
+                            MyInterface.class.getClassLoader(),
+                            new Class[] { MyInterface.class },
+                            handler);
+
+public class MyInvocationHandler implements InvocationHandler{
+  public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    //do something "dynamic"
+  }
+}
+```
+
+
+
+
 
 
 

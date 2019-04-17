@@ -18,6 +18,12 @@
 
 
 
+## 反射
+
+- [Java Reflection Tutorial](<http://tutorials.jenkov.com/java-reflection/index.html>)
+
+
+
 # Python学习资源
 
 
@@ -26,4 +32,7 @@
 
 # 综合
 
-1. [GURU99]([https://www.guru99.com](https://www.guru99.com/))：综合学习网站，包括Web 开发、大数据、机器学习等
+1. [GURU99](https://www.guru99.com/)：综合学习网站，包括Web 开发、大数据、机器学习等
+
+2. [jenkov](<http://tutorials.jenkov.com/>)
+

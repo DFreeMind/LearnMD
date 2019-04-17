@@ -137,3 +137,13 @@ public class EmployeeCRUDTransactionAspect implements Ordered{
 }
 ```
 
+
+
+# Source
+
+- [依赖注入](<https://github.com/android-cn/blog/tree/master/java/dependency-injection>)
+
+- [说说依赖注入](<https://droidyue.com/blog/2015/06/13/talk-show-about-dependency-injection/>)
+
+- [浅谈IOC--说清楚IOC是什么](https://www.cnblogs.com/DebugLZQ/archive/2013/06/05/3107957.html)
+
