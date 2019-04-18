@@ -1,3 +1,10 @@
+- [Java 中的 Monitor 机制](https://segmentfault.com/a/1190000016417017)
+- [深入理解多线程（四）—— Moniter的实现原理](https://www.hollischuang.com/archives/2030)
+
+- [UNDERSTANDING THREADS, MONITORS AND LOCKS](http://www.javacreed.com/understanding-threads-monitors-and-locks/)
+
+
+
 # Object level lock vs Class level lock
 
 **Object level**：
@@ -254,6 +261,9 @@ Once a thread owns a lock, it can request the same lock again multiple times, bu
 Please note that lock is acquired by a thread, when it explicitly ask for it. In Java, this is done with the synchronized keyword, or with `wait` and `notify`.
 
 ## Monitors
+
+- [深入理解多线程（四）—— Moniter的实现原理](https://www.hollischuang.com/archives/2030)
+- [Java 中的 Monitor 机制](https://segmentfault.com/a/1190000016417017)
 
 **Monitor is a synchronization construct that allows threads to have both mutual exclusion (using locks) and cooperation** i.e. the ability to make threads wait for certain condition to be true (using **wait-set**).
 
