@@ -80,6 +80,20 @@ There are five keywords used to handle exceptions in java:
 4. throw
 5. throws
 
+### **What purpose does the keywords final, finally, and finalize fulfill?** 
+
+**Final:**
+
+Final is used to apply restrictions on class, method and variable. Final class can’t be inherited, final method can’t be overridden and final variable value can’t be changed. Let’s take a look at the example below to understand it better.
+
+**Finally**
+
+Finally is used to place important code, it will be executed whether exception is handled or not. Let’s take a look at the example below to understand it better.
+
+**Finalize**
+
+Finalize is used to perform clean up processing just before object is garbage collected. Let’s take a look at the example below to understand it better.
+
 
 
 
@@ -458,6 +472,38 @@ Once an object is serialized, changes in its class break the de-serialization pr
 - Changing the access to a field
 - Changing a field from static to non-static or transient to non transient
 
+## Exception
+
+### **What is exception hierarchy in java?**
+
+The hierarchy is as follows:
+
+Throwable is a parent class of all Exception classes. There are two types of Exceptions: Checked exceptions and UncheckedExceptions or RunTimeExceptions. Both type of exceptions extends Exception class whereas errors are further classified into Virtual Machine error and Assertion error.
+
+![ExceptionHierarchy - Java Interview Questions - Edureka](https://www.edureka.co/blog/wp-content/uploads/2017/04/Exception-hierarchy-516x300.png)
+
+### How to create a custom Exception?
+
+To create you own exception extend the Exception class or any of its subclasses.
+
+- class New1Exception extends Exception { }               // this will create Checked Exception
+- class NewException extends IOException { }             // this will create Checked exception
+- class NewException extends NullPonterExcpetion { }  // this will create UnChecked exception
+
+### What are the important methods of Java Exception Class?
+
+Exception and all of it’s subclasses doesn’t provide any specific methods and all of the methods are defined in the base class Throwable.
+
+1. **String getMessage()** – This method returns the message String of Throwable and the message can be provided while creating the exception through it’s constructor.
+2. **String getLocalizedMessage(**) – This method is provided so that subclasses can override it to provide locale specific message to the calling program. Throwable class implementation of this method simply use getMessage() method to return the exception message.
+3. **Synchronized Throwable getCause()** – This method returns the cause of the exception or null id the cause is unknown.
+4. **String toString()** – This method returns the information about Throwable in String format, the returned String contains the name of Throwable class and localized message.
+5. **void printStackTrace()** – This method prints the stack trace information to the standard error stream, this method is overloaded and we can pass PrintStream or PrintWriter as argument to write the stack trace information to the file or stream.
+
+
+
+
+
 ## Difference
 
 ### What is the difference between abstract classes and interfaces?
@@ -503,13 +549,13 @@ This is very common question if you are appearing interview for junior level pro
 
 ### **What are the differences between Checked Exception and Unchecked Exception?**
 
-#### **Checked Exception**
+**Checked Exception**
 
 - The classes that extend Throwable class except RuntimeException and Error are known as checked exceptions. 
 - Checked exceptions are checked at compile-time.
 - Example: IOException, SQLException etc.
 
-#### **Unchecked Exception**
+**Unchecked Exception**
 
 - The classes that extend RuntimeException are known as unchecked exceptions. 
 - Unchecked exceptions are not checked at compile-time.
@@ -1035,6 +1081,24 @@ object.wait() sends the current thread into the “Not Runnable” state, like s
 ## Can we override wait() or notify() methods?
 
 In Object.java, methods getClass(), notify(), notifyAll() and three wait() methods are final, so you can’t override them.
+
+## What are the differences between processes and threads?
+
+|                   | **Process**                                                  | **Thread**                                                   |
+| ----------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| **Definition**    | An executing instance of a program is called a process.      | A thread is a subset of the process.                         |
+| **Communication** | Processes must use inter-process communication to communicate with sibling processes. | Threads can directly communicate with other threads of its process. |
+| **Control**       | Processes can only exercise control over child processes.    | Threads can exercise considerable control over threads of the same process. |
+| **Changes**       | Any change in the parent process does not affect child processes. | Any change in the main thread may affect the behavior of the other threads of the process. |
+| **Memory**        | Run in separate memory spaces.                               | Run in shared memory spaces.                                 |
+| **Controlled by** | Process is controlled by the operating system.               | Threads are controlled by programmer in a program.           |
+| **Dependence**    | Processes are independent.                                   | Threads are dependent.                                       |
+
+## What is synchronization?
+
+Synchronization refers to multi-threading. A synchronized block of code can be executed by only one thread at a time. As Java supports execution of multiple threads, two or more threads may access the same fields or objects. Synchronization is a process which keeps all concurrent threads in execution to be in sync. Synchronization avoids memory consistency errors caused due to inconsistent view of shared memory. When a method is declared as synchronized the thread holds the monitor for that method’s object. If another thread is executing the synchronized method the thread is blocked until that thread releases the monitor.
+
+![Synchronization - Java Interview Questions - Edureka](https://www.edureka.co/blog/wp-content/uploads/2017/04/Synchronization.png)
 
 
 

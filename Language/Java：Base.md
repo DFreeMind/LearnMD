@@ -812,6 +812,10 @@ What about getting data out of such a type? It turns out that you the only thing
 
 [Java Reflection Tutorial](<http://tutorials.jenkov.com/java-reflection/index.html>)
 
+[Java Reflection：神秘的Java反射机制了解一下？](<https://juejin.im/entry/5b3d6e2fe51d45199940bd39>)
+
+
+
 Java Reflection is the process of analyzing and modifying all the capabilities of a class at runtime. Reflection API in Java is used to manipulate class and its members which include fields, methods, constructor, etc. at runtime.
 
 Java Reflection is quite powerful and can be very useful. For instance, Java Reflection can be used to map properties in JSON files to getter / setter methods in Java objects, like [Jackson, GSON, Boon etc.](http://tutorials.jenkov.com/java-json/index.html)does. Or, Reflection can be used to map the column names of a [JDBC](http://tutorials.jenkov.com/jdbc/index.html) ResultSet to getter / setter methods in a Java object.

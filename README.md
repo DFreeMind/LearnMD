@@ -30,6 +30,18 @@
 
 
 
+# SQL
+
+## 基础
+
+- [What is Normalization? 1NF, 2NF, 3NF & BCNF with Examples](<https://www.guru99.com/database-normalization.html>) 数据库设计规范及其六种范式。
+
+
+
+
+
+
+
 # 综合
 
 1. [GURU99](https://www.guru99.com/)：综合学习网站，包括Web 开发、大数据、机器学习等

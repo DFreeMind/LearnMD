@@ -47,7 +47,7 @@
 
 ## 6、#{}和${}的区别是什么？
 
-#{}是预编译处理，${}是字符串替换。
+`#{}` 是预编译处理，`${}` 是字符串替换。
 
 Mybatis在处理#{}时，会将sql中的#{}替换为?号，调用PreparedStatement的set方法来赋值；
 
@@ -125,6 +125,7 @@ Mapper接口里的方法，是不能重载的，因为是使用 全限名+方法
        分页插件的基本原理是使用Mybatis提供的插件接口，实现自定义插件，在插件的拦截方法内拦截待执行的sql，然后重写sql，根据dialect方言，添加对应的物理分页语句和物理分页参数。
 
  
+
 
 
 11、Mybatis是如何将sql执行结果封装为目标对象并返回的？都有哪些映射形式？
@@ -277,6 +278,7 @@ Hibernate属于全自动ORM映射工具，使用Hibernate查询关联对象或�
 
  
 
+
     <!--collection  一对多关联查询 -->  
     <select id="getClass2" parameterType="int" resultMap="ClassesResultMap2">  
         select * from class c,teacher t,student s where c.teacher_id=t.t_id and c.c_id=s.class_id and c.c_id=#{id}  
@@ -311,6 +313,7 @@ Hibernate属于全自动ORM映射工具，使用Hibernate查询关联对象或�
         有联合查询和嵌套查询。联合查询是几个表联合查询,只查询一次,通过在resultMap里面的collection节点配置一对多的类就可以完成；嵌套查询是先查一个表,根据这个表里面的 结果的外键id,去再另外一个表里面查询数据,也是通过配置collection,但另外一个表的查询通过select节点配置。
 
  
+
 
 
 22、Mybatis是否支持延迟加载？如果支持，它的实现原理是什么？
