@@ -1126,3 +1126,25 @@ There are 5 stages in the lifecycle of a servlet:
 4. Service the request
 5. Servlet is destroyed
 
+
+
+# Design Pattern
+
+## Decorator Pattern
+
+**A) How to decide when to use decorator pattern?**
+
+If we drill down more on the concept, we find that Decorator Design Pattern has several requirement indicators to suggest that it is potential solution e.g.
+
+- We have an object that requires the extension e. a window control that requires additional “optional” features like scrollbars, titlebar and statusbar.
+- Several objects that support the extension by “decoration”. Usually, those objects share a common interface, traits, or superclass, and sometimes, additional, intermediate super-classes .
+- The decorated object (class or prototype instantiation), and the decorator objects have one or several common features. In order to ensure that functionality, the decorated object & the decorators have a common interface, traits, or class inheritance.
+
+**B) Difference between decorator pattern and Adapter pattern**
+
+No. AdapterPattern is used to convert the interface of an object into something else. DecoratorPattern is used to extend the functionality of an object while maintaining its interface. Both of these are probably sometimes called Wrapper Pattern since both of them do “wrap” an object.
+
+**C) Difference between a DecoratorPattern and Subclassing**
+
+The difference between a DecoratorPattern and subclassing is that In subclassing you can decorate any class that implements an interface “with a single class”. Say I wanted to give myself a java.util.Map that printed a message whenever I added or removed a key. If I only ever actually used java.util.HashMap I could just create PrintingMap? as a subclass of HashMap and override put & remove. But if I want to create a printing version of TreeMap then I either create PrintingTreeMap? (which has almost identical code to PrintingMap?
+
