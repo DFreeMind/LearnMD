@@ -257,6 +257,12 @@ LinkedList should be preferred there are no large number of random access of ele
 
 # HashMap
 
+[Map 综述（一）：彻头彻尾理解 HashMap](https://blog.csdn.net/justloveyou_/article/details/62893086)
+
+
+
+
+
 **HashMap in Java** in a collection class which implements **Map** interface. It is used to store **key & value** pairs. Each key is mapped to a single value in the map.
 
 Keys are unique. It means we can insert a key ‘K’ only once in a map. Duplicate keys are not allowed. Though a value `'V'` can be mapped to multiple keys.
