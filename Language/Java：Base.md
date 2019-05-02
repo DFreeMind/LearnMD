@@ -1190,7 +1190,13 @@ public class MyInvocationHandler implements InvocationHandler{
 
 
 
+# Proxy
 
+[Java三种代理模式：静态代理、动态代理和cglib代理](https://segmentfault.com/a/1190000011291179)
+
+[Java代理和动态代理机制分析和应用](https://github.com/crazycodeboy/Java_Advanced/tree/master/Java_Proxy_Test)
+
+[Java的静态代理和动态代理]([http://1csh1.github.io/2017/02/20/Java%E7%9A%84%E9%9D%99%E6%80%81%E4%BB%A3%E7%90%86%E5%92%8C%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/](http://1csh1.github.io/2017/02/20/Java的静态代理和动态代理/))
 
 
 
