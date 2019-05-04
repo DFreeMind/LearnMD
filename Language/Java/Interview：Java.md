@@ -94,6 +94,12 @@ Finally is used to place important code, it will be executed whether exception i
 
 Finalize is used to perform clean up processing just before object is garbage collected. Let’s take a look at the example below to understand it better.
 
+### What is Java String Pool?
+
+Java String pool refers to a collection of Strings which are stored in heap memory. In this, whenever a new object is created, String pool first checks whether the object is already present in the pool or not. If it is present, then the same reference is returned to the variable else new object will be created in the String pool and the respective reference will be returned.
+
+![String pool - Java Interview Questions - Edureka](https://www.edureka.co/blog/content/ver.1556012641/uploads/2019/04/String-pool.png)
+
 
 
 
@@ -418,6 +424,16 @@ The public access modifier means that all code can access the class, field, cons
 | default       | Y            | Y              | N          | N                |
 | private       | Y            | N              | N          | N                |
 
+details：
+
+|           **Modifier**           | **Default** | **Private** | **Protected** | **Public** |
+| :------------------------------: | ----------- | ----------- | ------------- | ---------- |
+|           *Same class*           | YES         | YES         | YES           | YES        |
+|     *Same Package subclass*      | YES         | NO          | YES           | YES        |
+|   *Same Package non-subclass*    | YES         | NO          | YES           | YES        |
+|   *Different package subclass*   | NO          | NO          | YES           | YES        |
+| *Different package non-subclass* | NO          | NO          | NO            | YES        |
+
 ### 17. What is garbage collection? Can we enforce it?
 
 Garbage collection is an automatic memory management feature in many modern programming languages, such as Java and languages in the .NET framework. Languages that use garbage collection are often interpreted or run within a virtual machine like the JVM. In each case, the environment that runs the code is also responsible for garbage collection. A GC has two goals: any unused memory should be freed, and no memory should be freed unless the program will not use it anymore.
@@ -471,6 +487,16 @@ Once an object is serialized, changes in its class break the de-serialization pr
 - Adding java.io.Serializable
 - Changing the access to a field
 - Changing a field from static to non-static or transient to non transient
+
+### What is a classloader in Java?
+
+The **Java ClassLoader** is a subset of JVM (Java Virtual Machine) that is responsible for loading the class files. Whenever a Java program is executed it is first loaded by the classloader. Java provides three built-in classloaders:
+
+1. Bootstrap ClassLoader
+2. Extension ClassLoader
+3. System/Application ClassLoader
+
+
 
 ## Exception
 
@@ -561,6 +587,35 @@ This is very common question if you are appearing interview for junior level pro
 - Unchecked exceptions are not checked at compile-time.
 - Example: ArithmeticException, NullPointerException etc.
 
+### **What is the difference between this() and super() in Java?**
+
+In Java, super() and this(), both are special keywords that are used to call the constructor. 
+
+| **this()**                                                | **super()**                                                  |
+| --------------------------------------------------------- | ------------------------------------------------------------ |
+| 1. this() represents the current instance of a class      | 1. super() represents the current instance of a parent/base class |
+| 2. Used to call the default constructor of the same class | 2. Used to call the default constructor of the parent/base class |
+| 3. Used to access methods of the current class            | 3. Used to access methods of the base class                  |
+| 4.  Used for pointing the current class instance          | 4. Used for pointing the superclass instance                 |
+| 5. Must be the first line of a block                      | 5. Must be the first line of a block                         |
+
+### Differentiate between static and non-static methods in Java
+
+| **Static Method**                                            | **Non-Static Method**                                        |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| 1. *The static* keyword must be used before the method name  | 1. No need to use the **static** keyword before the method name |
+| 2. It is called using the class (className.methodName)       | 2. It is can be called like any general method               |
+| 3. They can’t access any non-static instance variables or methods | 3. It can access any static method and any static variable without creating an instance of the class |
+
+### Difference between String, String Builder, and String Buffer
+
+| **Factor**      | **String**           | **String Builder** | **String Buffer** |
+| --------------- | -------------------- | ------------------ | ----------------- |
+| *Storage Area*  | Constant String Pool | Heap Area          | Heap Area         |
+| *Mutability*    | Immutable            | Mutable            | Mutable           |
+| *Thread Safety* | Yes                  | Yes                | No                |
+| *Performance*   | Fast                 | Slow               | Fast              |
+
 
 
 
@@ -635,6 +690,20 @@ ArrayList, HashMap, TreeMap, Hashtable classes provide random access to it’s e
 **Collections and Arrays classes are special utility classes to support collection framework core classes.** They provide utility functions to get read-only/ synchronized collections, sort the collection on various ways etc.
 
 Arrays also helps array of objects to convert in collection objects. Arrays also have some functions which helps in copying or working in part of array objects.
+
+### What is collection class in Java? List down its methods and interfaces.
+
+In Java, the collection is a framework that acts as an architecture for storing and manipulating a group of objects. Using Collections you can perform various tasks like searching, sorting, insertion, manipulation, deletion etc. Java collection framework includes the following:
+
+- Interfaces
+- Classes
+- Methods
+
+The below image shows the complete hierarchy of the Java Collection.
+
+![FrameworkHierarchy - Java Collections - Edureka](https://www.edureka.co/blog/wp-content/uploads/2017/05/Collection-framework-hierarchy.png)
+
+
 
 
 
@@ -1114,7 +1183,39 @@ Synchronization refers to multi-threading. A synchronized block of code can be e
 
 # Servlet
 
-### **What is the life-cycle of a servlet?**
+## Base Question
+
+### What is a servlet?
+
+- Java Servlet is server-side technologies to extend the capability of web servers by providing support for dynamic response and data persistence.
+- The javax.servlet and javax.servlet.http packages provide interfaces and classes for writing our own servlets.
+- All servlets must implement the javax.servlet.Servlet interface, which defines servlet lifecycle methods. When implementing a generic service, we can extend the GenericServlet class provided with the Java Servlet API. The HttpServlet class provides methods, such as doGet() and doPost(), for handling HTTP-specific services.
+- Most of the times, web applications are accessed using HTTP protocol and thats why we mostly extend HttpServlet class. Servlet API hierarchy is shown in below image.
+
+![Servlet - Java Interview Questions - Edureka](https://www.edureka.co/blog/wp-content/uploads/2017/04/Servlet-Java-340x300.png)
+
+### **What is Request Dispatcher?**
+
+RequestDispatcher interface is used to forward the request to another resource that can be HTML, JSP or another servlet in same application. We can also use this to include the content of another resource to the response.
+
+There are two methods defined in this interface:
+
+1.void forward()
+
+2.void include()
+
+![ForwardMethod - Java Interview Questions - Edureka](https://www.edureka.co/blog/wp-content/uploads/2017/04/Forward-Method.png)
+
+![IncludeMethod - Java Interview Questions - Edureka](https://www.edureka.co/blog/wp-content/uploads/2017/04/Include-Method.png)
+
+### How does cookies work in Servlets?
+
+- Cookies are text data sent by server to the client and it gets saved at the client local machine.
+- Servlet API provides cookies support through javax.servlet.http.Cookie class that implements Serializable and Cloneable interfaces.
+- HttpServletRequest getCookies() method is provided to get the array of Cookies from request, since there is no point of adding Cookie to request, there are no methods to set or add cookie to request.
+- Similarly HttpServletResponse addCookie(Cookie c) method is provided to attach cookie in response header, there are no getter methods for cookie.
+
+### What is the life-cycle of a servlet?
 
 There are 5 stages in the lifecycle of a servlet:
 
@@ -1125,6 +1226,60 @@ There are 5 stages in the lifecycle of a servlet:
 3. Servlet is initialized
 4. Service the request
 5. Servlet is destroyed
+
+### **What are the different methods of session management in servlets?**
+
+Session is a conversational state between client and server and it can consists of multiple request and response between client and server. Since HTTP and Web Server both are stateless, the only way to maintain a session is when some unique information about the session (session id) is passed between server and client in every request and response.
+
+Some of the common ways of session management in servlets are:
+
+1. User Authentication
+2. HTML Hidden Field
+3. Cookies
+4. URL Rewriting
+5. Session Management API
+
+
+
+![SessionManagement - Java Interview Questions - Edureka](https://www.edureka.co/blog/wp-content/uploads/2017/04/Session-management.png)
+
+
+
+
+
+## Difference
+
+### **What are the differences between Get and Post methods?**
+
+| **Get**                                                      | **Post**                                                     |
+| :----------------------------------------------------------- | :----------------------------------------------------------- |
+| Limited amount of data can be sent because data is sent in header. | Large amount of data can be sent because data is sent in body. |
+| Not Secured because data is exposed in URL bar.              | Secured because data is not exposed in URL bar.              |
+| Can be bookmarked                                            | Cannot be bookmarked                                         |
+| Idempotent                                                   | Non-Idempotent                                               |
+| It is more efficient and used than Post                      | It is less efficient and used                                |
+
+### **What are the differences between forward() method and sendRedirect() methods?**
+
+| **forward() method**                                  | **SendRedirect() method**                                    |
+| :---------------------------------------------------- | :----------------------------------------------------------- |
+| forward() sends the same request to another resource. | sendRedirect() method sends new request always because it uses the URL bar of the browser. |
+| forward() method works at server side.                | sendRedirect() method works at client side.                  |
+| forward() method works within the server only.        | sendRedirect() method works within and outside the server.   |
+
+### What are the differences between ServletContext vs ServletConfig?
+
+The difference between ServletContext and ServletConfig in Servlets JSP is in below tabular format.
+
+| **ServletConfig**                                            | **ServletContext**                                           |
+| :----------------------------------------------------------- | :----------------------------------------------------------- |
+| Servlet config object represent single servlet               | It represent whole web application running on particular JVM and common for all the servlet |
+| Its like local parameter associated with particular servlet  | Its like global parameter associated with whole application  |
+| It’s a name value pair defined inside the servlet section of web.xml file so it has servlet wide scope | ServletContext has application wide scope so define outside of servlet tag in web.xml file. |
+| getServletConfig() method is used to get the config object   | getServletContext() method is  used to get the context object. |
+| for example shopping cart of a user is a specific to particular user so here we can use servlet config | To get the MIME type of a file or application session related information is stored using servlet context object. |
+
+
 
 
 

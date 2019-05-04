@@ -6,3 +6,5 @@
 
 [RPC框架原理与实现](https://www.cnblogs.com/xiaoqi/p/java-rpc.html), [轻量级分布式 RPC 框架](https://my.oschina.net/huangyong/blog/361751)
 
+[深入浅出RPC原理](https://ketao1989.github.io/2016/12/10/rpc-theory-in-action/)
+

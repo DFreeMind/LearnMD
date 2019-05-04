@@ -374,13 +374,15 @@ Next, a question may come if we have abstract methods and main class both, we ma
 
 # Generics
 
-[Generics](https://docs.oracle.com/javase/tutorial/extra/generics/) in java were introduced as one of [**features in JDK 5**](https://howtodoinjava.com/java-5/).
+[Generics](https://docs.oracle.com/javase/tutorial/extra/generics/) in java were introduced as one of [**features in JDK 5**](https://howtodoinjava.com/java-5/). It provide the type  checking at compile time. If you use generics, you need not to perform the type casting explicitly. Java compiler applies strong type checking if you use generics in your code and shows errors if the code violates the type safety. Thus removing the risk of ClassCastException.
 
 “**Java Generics**” is a technical term denoting a set of language features related to the definition and use of generic types and methods . In java, Generic types or methods differ from regular types and methods in that they have type parameters.
 
 > “Java Generics are a language feature that allows for definition and use of generic types and methods.”
 
 Generic types are instantiated to form parameterized types by providing actual type arguments that replace the formal type parameters. A class like `LinkedList<E>` is a generic type, that has a type parameter E . Instantiations, such as `LinkedList<Integer>` or a `LinkedList<String>`, are called parameterized types, and String and Integer are the respective actual type arguments.
+
+
 
 ## Why Generics
 
