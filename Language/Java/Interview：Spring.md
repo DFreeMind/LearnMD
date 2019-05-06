@@ -8,6 +8,18 @@ At present, Spring framework consists of features organized into about 20 module
 
 ![spring modules](https://cdn1.howtodoinjava.com/wp-content/uploads/2015/02/spring-modules.png)
 
+**Some of the important Spring Framework modules are:**
+
+- Spring Context – for dependency injection.
+- Spring AOP – for aspect oriented programming.
+- Spring DAO – for database operations using DAO pattern
+- Spring JDBC – for JDBC and DataSource support.
+- Spring ORM – for ORM tools support such as Hibernate
+- Spring Web Module – for creating web applications.
+- Spring MVC – Model-View-Controller implementation for creating web applications, web services etc.
+
+
+
 ## What are the benefits of using Spring Framework?
 
 Following is the list of few of the great benefits of using Spring Framework –
@@ -19,6 +31,32 @@ Following is the list of few of the great benefits of using Spring Framework –
 - **Testing an application** written with Spring is simple because environment-dependent code is moved into this framework. Furthermore, by using JavaBean-style POJOs, it becomes easier to use dependency injection for injecting test data.
 - Spring’s web framework is a well-designed web MVC framework, which provides a great alternative to web frameworks such as Struts or other over engineered or less popular web frameworks.
 - Spring provides a consistent *transaction management* interface that can scale down to a local transaction (using a single database, for example) and scale up to global transactions (using JTA, for example).
+
+### **Explain Bean in Spring and List the different Scopes of Spring bean.**
+
+Beans are objects that form the backbone of a Spring application. They are managed by the Spring IoC container. In other words, a bean is an object that is instantiated, assembled, and managed by a Spring IoC container.
+
+There are five Scopes defined in Spring beans.
+
+![SpringBean - Java Interview Questions - Edureka](https://www.edureka.co/blog/wp-content/uploads/2017/04/Scopes-of-bean.png)
+
+- **Singleton**: Only one instance of the bean will be created for each container. This is the default scope for the spring beans. While using this scope, make sure spring bean doesn’t have shared instance variables otherwise it might lead to data inconsistency issues because it’s not thread-safe.
+- **Prototype**: A new instance will be created every time the bean is requested.
+- **Request**: This is same as prototype scope, however it’s meant to be used for web applications. A new instance of the bean will be created for each HTTP request.
+- **Session**: A new bean will be created for each HTTP session by the container.
+- **Global-session**: This is used to create global session beans for Portlet applications.
+
+
+
+### Explain the role of DispatcherServlet and ContextLoaderListener.
+
+**DispatcherServlet** is basically the front controller in the Spring MVC application as it loads the spring bean configuration file and initializes all the beans that have been configured. If annotations are enabled, it also scans the packages to configure any bean annotated with @Component, @Controller, @Repository or @Service annotations.
+
+![DispatcherServlet - Java Interview Questions - Edureka](https://www.edureka.co/blog/wp-content/uploads/2017/04/Dispatcher-Servlet.png)**ContextLoaderListener,** on the other hand, is the listener to start up and shut down the WebApplicationContext in Spring root. Some of its important functions includes tying up the lifecycle of Application Context to the lifecycle of the ServletContext and automating the creation of ApplicationContext.
+
+### **![ContextLoader - Java Interview Questions - Edureka](https://www.edureka.co/blog/wp-content/uploads/2017/04/ContextloaderListener-528x201.png)**
+
+
 
 ## What is Inversion of Control (IoC) and Dependency Injection?
 
@@ -39,6 +77,26 @@ In Java, dependency injection may happen through 3 ways:
 The `org.springframework.beans` and `org.springframework.context` packages provide the basis for the Spring Framework’s IoC container. The `BeanFactory` interface provides an advanced configuration mechanism capable of managing objects of any nature. The `ApplicationContext` interface builds on top of the `BeanFactory` (it is a sub-interface) and adds other functionality such as easier integration with **Spring’s AOP features**, **message resource handling** (for use in internationalization), event propagation, and application-layer specific contexts such as the `WebApplicationContext` for use in web applications.
 
 The `org.springframework.beans.factory.BeanFactory` is the actual representation of the Spring IoC container that is responsible for containing and otherwise managing the aforementioned beans. The **BeanFactory** interface is the central IoC container interface in Spring.
+
+## What is Spring AOP Proxy?
+
+A proxy is a well-used design pattern. To put it simply, **a proxy is an object that looks like another object, but adds special functionality behind the scene**.
+
+Spring AOP is proxy-based. AOP proxy is an object created by the AOP framework in order to implement the aspect contracts in runtime.
+
+Spring AOP defaults to using standard JDK dynamic proxies for AOP proxies. This enables any interface (or set of interfaces) to be proxied. Spring AOP can also use CGLIB proxies. This is necessary to proxy classes, rather than interfaces.
+
+**CGLIB is used by default if a business object does not implement an interface.**
+
+## What are the different advice types in spring?
+
+An advice is the implementation of cross-cutting concern which you are interested in applying on other modules of your application. Advices are of mainly 5 types :
+
+1. **Before advice** : Advice that executes before a join point, but which does not have the ability to prevent execution flow proceeding to the join point (unless it throws an exception). To use this advice, use `@Before`annotation.
+2. **After returning advice** : Advice to be executed after a join point completes normally. For example, if a method returns without throwing an exception. To use this advice, use `@AfterReturning` annotation.
+3. **After throwing advice** : Advice to be executed if a method exits by throwing an exception. To use this advice, use `@AfterThrowing` annotation.
+4. **After advice** : Advice to be executed regardless of the means by which a join point exits (normal or exceptional return). To use this advice, use `@After` annotation.
+5. **Around advice** : Advice that surrounds a join point such as a method invocation. This is the most powerful kind of advice. To use this advice, use `@Around` annotation.
 
 ## In how many ways, you can configure Spring into our application?
 
@@ -626,3 +684,11 @@ Please find below the noticeable differences:
 2. Setter Injection will overrides the constructor injection value, provided if we write setter and constructor injection for the same property. But, constructor injection cannot overrides the setter injected values. It’s obvious because constructors are called to first to create the instance.
 3. Using setter injection you can not guarantee that certain dependency is injected or not, which means you may have an object with incomplete dependency. On other hand constructor Injection does not allow you to construct object, until your dependencies are ready.
 4. In constructor injection, if Object A and B are dependent each other i.e A is depends on B and vice-versa, Spring throws `ObjectCurrentlyInCreationException` while creating objects of A and B because A object cannot be created until B is created and vice-versa. So spring can resolve circular dependencies through setter-injection because Objects are constructed before setter methods invoked.
+
+| **No.** | **Constructor Injection**                       | **Setter Injection**                                         |
+| ------- | ----------------------------------------------- | ------------------------------------------------------------ |
+| 1)      | No Partial Injection                            | Partial Injection                                            |
+| 2)      | Desn’t override the setter property             | Overrides the constructor property if both are defined.      |
+| 3)      | Creates new instance if any modification occurs | Doesn’t create new instance if you change the property value |
+| 4)      | Better for too many properties                  | Better for few properties.                                   |
+

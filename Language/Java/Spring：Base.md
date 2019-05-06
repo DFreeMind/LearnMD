@@ -1,7 +1,5 @@
 # AOP key terms
 
-
-
 ```java
 @Aspect
 public class EmployeeCRUDAspect {

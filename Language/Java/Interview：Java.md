@@ -1123,7 +1123,15 @@ In java. all collection which have feature of automatic sorting, uses compare me
 
 # Thread
 
-## 1. What is synchronization? Object level locking and class level locking?
+## What is synchronization?
+
+Synchronization refers to multi-threading. A synchronized block of code can be executed by only one thread at a time. As Java supports execution of multiple threads, two or more threads may access the same fields or objects. Synchronization is a process which keeps all concurrent threads in execution to be in sync. Synchronization avoids memory consistency errors caused due to inconsistent view of shared memory. When a method is declared as synchronized the thread holds the monitor for that method’s object. If another thread is executing the synchronized method the thread is blocked until that thread releases the monitor.
+
+![Synchronization - Java Interview Questions - Edureka](https://www.edureka.co/blog/wp-content/uploads/2017/04/Synchronization.png)
+
+
+
+## What is synchronization? Object level locking and class level locking?
 
 ***Synchronization*** refers to multi-threading. A synchronized block of code can only be executed by one thread at a time. Java supports multiple threads to be executed. This may cause two or more threads to access the same fields or objects. Synchronization is a process which keeps all concurrent threads in execution to be in synch. Synchronization avoids memory consistence errors caused due to inconsistent view of shared memory. When a method is declared as synchronized; the thread holds the monitor for that method’s object If another thread is executing the synchronized method, your thread is blocked until that thread releases the monitor.
 
@@ -1135,7 +1143,7 @@ Synchronization in java is achieved using synchronized keyword. You can use sync
 
 [Read more about synchronization here.](https://howtodoinjava.com/java/multi-threading/thread-synchronization-object-level-locking-and-class-level-locking/)
 
-## 2. Difference between sleep() and wait()?
+## Difference between sleep() and wait()?
 
 sleep() is a method which is used to hold the process for few seconds or the time you wanted but in case of wait() method thread goes in waiting state and it won’t come back automatically until we call the notify() or notifyAll().
 
