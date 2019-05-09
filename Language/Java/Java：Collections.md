@@ -66,7 +66,7 @@ By purpose, [generics](https://howtodoinjava.com/java/generics/complete-java-gen
 
   The code is easier to read as well because of consistent class and method names.
 
-# Array
+# Array(List)
 
 An **array** is a container object that holds a **fixed number of values** of a **single type** in a **contiguous memory location**. It is a data structure which is used to store finite number of elements and all elements must be of similar data type.
 
@@ -97,11 +97,15 @@ An **array** is a container object that holds a **fixed number of values** of a 
 
 # ArrayList
 
+[Java Collection Framework : List](https://blog.csdn.net/justloveyou_/article/details/52955619)
+
+
+
 Java ArrayList class extends `AbstractList` class which implements `List` interface. The List interface extends `Collection` and `Iterable` interfaces in hierarchical order.
 
 ![ArrayList Hierarchy](https://cdn1.howtodoinjava.com/wp-content/uploads/2018/10/ArrayList.jpg)
 
-
+![image](https://ws2.sinaimg.cn/large/69d4185bly1g2to9z6z22j20kc09nq39.jpg)
 
 ## ArrayList Features
 
@@ -201,6 +205,8 @@ Except above difference in capacity, there is no difference between both kind of
 
 # LinkedList
 
+[Java集合---LinkedList源码解析](http://www.cnblogs.com/ITtangtang/p/3948610.html)
+
 **Java LinkedList** class is doubly-linked list implementation of the `List` and `Deque` interfaces. It implements all optional list operations, and permits all elements (including null).
 
 ```java
@@ -212,6 +218,8 @@ public class LinkedList<E>
 ```
 
 ![LinkedList Hierarchy](https://cdn2.howtodoinjava.com/wp-content/uploads/2018/10/LinkedList-Hierarchy.png)
+
+![image](https://ws2.sinaimg.cn/large/69d4185bly1g2tq7fr464j20hk0br74r.jpg)
 
 ## LinkedList Features
 
@@ -259,7 +267,7 @@ LinkedList should be preferred there are no large number of random access of ele
 
 [Map 综述（一）：彻头彻尾理解 HashMap](https://blog.csdn.net/justloveyou_/article/details/62893086)
 
-
+[Java HashMap工作原理及实现]([https://yikun.github.io/2015/04/01/Java-HashMap%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E5%8F%8A%E5%AE%9E%E7%8E%B0/](https://yikun.github.io/2015/04/01/Java-HashMap工作原理及实现/))
 
 
 
@@ -513,6 +521,10 @@ Hashtable is obsolete. Best is to use **ConcurrentHashMap** class which provide 
 
 # LinkedHashMap
 
+[Map 综述（二）：彻头彻尾理解 LinkedHashMap](https://blog.csdn.net/justloveyou_/article/details/71713781)
+
+
+
 **LinkedHashMap** in Java is used to store key-value pairs very similar to `HashMap`class. Difference is that LinkedHashMap maintains the order of elements inserted into it while HashMap is unordered.
 
 ![image](https://ws4.sinaimg.cn/large/69d4185bly1g224sm0tryj20d507lwem.jpg)
@@ -594,6 +606,29 @@ Access ordered LinkedHashMap provides a great starting point for creating a **LR
 HashMap and LinkedHashMap performs the basic operations of add, remove and contains in constant-time performance. LinkedHashMap performs a little wose than HashMap because it has to maintain a doubly-linkedlist and HashMap maintain only linked list.
 
 On the other hand, looping over Map in the case of LinkedHashMap is slightly faster than HashMap because the time required is proportional to ‘size’ only. In case of HashMap, iteration performance of proportional to ‘size + capacity’.
+
+# ConcurrentHashMap
+
+![image](https://ws4.sinaimg.cn/large/69d4185bly1g2trkb1q8rj20d905agln.jpg)
+
+`ConcurrentHashMap` is a `Map` implementation like `HashMap` and `Hashtable`, with additional support for concurrency features:
+
+- Unlike `Hastable` or `synchronizedMap` which locks the entire map exclusively to gain thread-safety feature, `ConcurrentHashMap` allows concurrent writer and reader threads. That means it allows some threads to modify the map and other threads to read values from the map at the same time, while `Hashtable` or `synchronizedMap` allows only one thread to work on the map at a time. More specifically, `ConcurrentHashMap` allows any number of concurrent reader threads and a limited number of concurrent writer threads, and both reader and writer threads can operate on the map simultaneously.
+  - Reader threads perform retrieval operations such as `get`, `containsKey`, `size`, `isEmpty`, and `iterate` over keys set of the map.
+  - Writer threads perform update operations such as `put` and `remove`.
+- Iterators returned by `ConcurrentHashMap` are weakly consistent, meaning that the iterator may not reflect latest update since it was constructed. An iterator should be used by only one thread and no `ConcurrentModificationException` will be thrown if the map is modified while the iterator is being used.
+
+
+
+## Method
+
+`ConcurrentHashMap` is an implementation of `ConcurrentMap` which is a subtype of the Map interface. A ConcurrentMap defines the following atomic operations:
+
+- `putIfAbsent(K key, V value)`: associates the specified key to the specified value if the key is not already associated with a value. This method is performed atomically, meaning that no other threads can intervene in the middle of checking absence and association.
+
+- `remove(Object key, Object value)`: removes the entry for a key only if currently mapped to some value. This method is performed atomically.
+
+
 
 # TreeMap
 
