@@ -609,6 +609,12 @@ On the other hand, looping over Map in the case of LinkedHashMap is slightly fas
 
 # ConcurrentHashMap
 
+[Java Concurrent Collection - ConcurrentHashMap Examples](https://www.codejava.net/java-core/concurrency/java-concurrent-collection-concurrenthashmap-examples)
+
+
+
+
+
 ![image](https://ws4.sinaimg.cn/large/69d4185bly1g2trkb1q8rj20d905agln.jpg)
 
 `ConcurrentHashMap` is a `Map` implementation like `HashMap` and `Hashtable`, with additional support for concurrency features:
@@ -627,6 +633,14 @@ On the other hand, looping over Map in the case of LinkedHashMap is slightly fas
 - `putIfAbsent(K key, V value)`: associates the specified key to the specified value if the key is not already associated with a value. This method is performed atomically, meaning that no other threads can intervene in the middle of checking absence and association.
 
 - `remove(Object key, Object value)`: removes the entry for a key only if currently mapped to some value. This method is performed atomically.
+
+- `replace(K key, V value)`: replaces the entry for a key only if currently mapped to some value. This method is performed atomically.
+
+- `replace(K key, V oldValue, V newValue)`: replaces the entry for a key only if currently mapped to a given value. This method is performed atomically.
+
+Also note that the methods `size()` and `isEmpty()` may return an approximation instead of an exact count due to the concurrent nature of the map. `ConcurrentHashMap` does not allow **null** key and **null** value.
+
+
 
 
 
