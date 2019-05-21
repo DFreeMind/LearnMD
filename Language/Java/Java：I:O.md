@@ -167,12 +167,3 @@ public static void usingFileChannel() throws IOException{
 # Read File
 
 use `Files.readAllBytes()`, `Files.lines()` (to **read line by line**) and `FileReader` & `BufferedReader` to **read text file to String**.
-
-
-
-
-
-
-
-
-
