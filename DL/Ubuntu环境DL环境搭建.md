@@ -858,6 +858,10 @@ sudo pip install -r $DIGITS_ROOT/requirements.txt
 
 
 
+遇到的问题：
+
+1. log_file config option not found - no log file is being saved
+
 
 
 # DIGITS with TensorFlow
