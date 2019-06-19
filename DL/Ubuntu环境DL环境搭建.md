@@ -874,7 +874,7 @@ sudo pip install -r $DIGITS_ROOT/requirements.txt
 
 ---
 
-
+目前使用 DIGITS 提供的 caffe 可以安装成功，地址为：<https://github.com/NVIDIA/DIGITS/blob/master/docs/BuildCaffe.md>
 
 
 
