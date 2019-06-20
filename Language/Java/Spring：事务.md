@@ -256,6 +256,20 @@ public enum Isolation {
 
 # 传播行为
 
+- [spring事务-说说Propagation及其实现原理](https://blog.csdn.net/yanyan19880509/article/details/53041564)
+
+- [MySQL事务隔离级别和Spring事务关系介绍](https://blog.csdn.net/a837199685/article/details/54563740)
+
+- [理解Spring的事务传播机制](https://waylau.com/spring-transaction/)
+
+- [深入分析spring事务传播行为](https://www.itcodemonkey.com/article/12302.html)
+
+- [Spring事务管理与传播机制详解以及使用实例](https://blog.csdn.net/hcmony/article/details/77850183)
+
+
+
+事务传播行为用于指定在多个事务方法间调用时，事务是如何在这些方法间传播的。
+
 
 
 Spring 中提供了 7 中传播方式，定义在 `org.springframework.transaction.annotation.Propagation` 中，如下：
@@ -287,4 +301,165 @@ public enum Propagation {
 ```java
 @Transactional(propagation = Propagation.REQUIRED)
 ```
+
+## REQUIRED
+
+`required` 是spring 默认的事务传播方式，表示如果当前存在一个事务，则新的事务加入到已存在的事务中；如果当前不存在事务，则开启一个新的事务。
+
+```java
+@Transactional
+methodA{
+	methodB()
+}
+@Transactional
+methondB(){}
+```
+
+spring 使用 AOP 来支持声明式事务，会根据事务属性，自动在调用方法之前决定是否开启一个事务，并在方法执行之后决定事务提交或者回滚。如果，是单独调用上面的，那么就相当于：
+
+```java
+main{ 
+    Connection con=null; 
+    try{ 
+        con = getConnection(); 
+        con.setAutoCommit(false); 
+        //方法调用
+        methodB(); 
+        //提交事务
+        con.commit(); 
+    } Catch(RuntimeException ex) { 
+        //回滚事务
+        con.rollback();   
+    } finally { 
+        //释放资源
+        closeCon(); 
+    } 
+}
+```
+
+spring 保证在方法 B 中多有的调用都在一个相同的连接之上。在调用方法 B 时，没有一个存在的事务，所以获得一个新的连接，开启一个新的事务。当是方法 A 里面调用方法 B 时，执行的效果相当于下面：
+
+```java
+main{ 
+    Connection con = null; 
+    try{ 
+        con = getConnection(); 
+        methodA(); 
+        con.commit(); 
+    } catch(RuntimeException ex) { 
+        con.rollback(); 
+    } finally {    
+        closeCon(); 
+    }  
+}
+```
+
+调用方法 A  时，环境中还没有事务，所以开启一个新的事务。当在方法A中调用方法B时，环境中已经存在一个事务，所以将 B 加入当前事务。
+
+![image](https://ws1.sinaimg.cn/large/69d4185bgy1g47l3kjnh5j20cx092wew.jpg)
+
+使用 `required` 方式的事务，只要方法A或者B任何有异常事务就会回滚。
+
+## SUPPORTS
+
+`supports` 方式的事务表示，如果当前存在事务就加入当前事务，若没有事务则以非事务的方式执行。如下示例：
+
+```java
+@Transactional
+methodA(){
+	methodB()
+}
+@Transactional(propagation = Propagation.SUPPORTS)
+methodB(){}
+```
+
+如上面的方式，如果单独调用方法B，因为当前没有事务，因此方法B以非事务的方式运行。而如果调用方法A那么B就加入A的事务，这样方法A或者B任何一个有异常整个事务就会回滚。
+
+![image](https://ws2.sinaimg.cn/large/69d4185bgy1g47m55mfydj20u80bi0u3.jpg)
+
+## MANDATORY
+
+`MANDATORY` 表示方法必须在事务中运行，当前有事务则加入，若当前没有事务，则抛出异常。
+
+![image](https://wx2.sinaimg.cn/large/69d4185bgy1g47mlrpztmj20u60bkta6.jpg)
+
+当方法A有事务时，方法A或者B抛出异常，整个事务会回滚。
+
+## REQUIRES_NEW
+
+`REQUIRES_NEW` 表示总是创建一个新的事务，如果当前存在事务，那么就把当前的事务挂起。如下示例：
+
+```java
+@Transactional
+methodA(){
+    doSomeThingA();
+    methodB();
+    doSomeThingB();
+}
+ @Transactional(propagation = Propagation.REQUIRES_NEW)
+ methodB(){}
+```
+
+那么调用方法A就相当于：
+
+```java
+
+main(){
+    TransactionManager tm = null;
+    try{
+        //获得一个JTA事务管理器
+        tm = getTransactionManager();
+        tm.begin();//开启一个新的事务
+        Transaction ts1 = tm.getTransaction();
+        doSomeThing();
+        tm.suspend();//挂起当前事务
+        try{
+            tm.begin();//重新开启第二个事务
+            Transaction ts2 = tm.getTransaction();
+            methodB();
+            ts2.commit();//提交第二个事务
+        } Catch(RunTimeException ex) {
+            ts2.rollback();//回滚第二个事务
+        } finally {
+            //释放资源
+        }
+        //methodB执行完后，恢复第一个事务
+        tm.resume(ts1);
+        doSomeThingB();
+        ts1.commit();//提交第一个事务
+    } catch(RunTimeException ex) {
+        ts1.rollback();//回滚第一个事务
+    } finally {
+        //释放资源
+    }
+}
+```
+
+在这里 `ts1` 称为外层事务，`ts2` 称为内层事务。从上面可以看到，`ts1`与 `ts2` 是两个独立的事务，互不相干。如果方法A在调用方法B之后调用的 `doSomeThingB` 失败了，但方法B所做的结果依然会被提交，而除了方法B之外的结果都会回滚。使用PROPAGATION_REQUIRES_NEW,需要使用 JtaTransactionManager作为事务管理器。
+
+![image](https://wx1.sinaimg.cn/large/69d4185bgy1g47ncgz7e1j20i00as3z8.jpg)
+
+## NESTED
+
+`NESTED` 如果当前存在事务，则创建一个事务作为当前事务的嵌套事务来运行；如果当前没有事务，则该取值等价于`REQUIRED`，即方法运行在一个新事务中。
+
+这是一个嵌套事务,使用JDBC 3.0驱动时，仅仅支持 `DataSourceTransactionManager` 作为事务管理器。需要 JDBC 驱动的 `java.sql.Savepoint` 类。有一些 JTA 的事务管理器实现可能也提供了同样的功能。使用 `PROPAGATION_NESTED`，还需要把`PlatformTransactionManager` 的 `nestedTransactionAllowed`属性设为 true；而 `nestedTransactionAllowed` 属性值默认为 false。
+
+![image](https://wx1.sinaimg.cn/large/69d4185bgy1g47o0guqvoj20ua0bdjt7.jpg)
+
+当方法A不存在事务，则方法B运行在一个新事务中，B抛出异常，B事务回滚，A不回滚。A抛出异常，A和B都不回滚。
+
+若A存在事务，则A抛出异常A和B都会被回滚；若B抛出异常，A不捕获，则A和B都会回滚，若A捕获了异常，则只有B回滚，而A不回滚。
+
+---
+
+`PROPAGATION_NESTED` 与 `PROPAGATION_REQUIRES_NEW` 的区别是，`PROPAGATION_REQUIRES_NEW` 另开启一个事务，将会与它的父事务相互独立，而`PROPAGATION_NESTED` 的事务和它的父事务是相依的，它的提交要和它的父事务一起。也就是说，如果父事务最后回滚，它也要回滚。如果子事务回滚或提交，不会导致父事务回滚或提交，但父事务回滚将导致子事务回滚。
+
+## NOT_SUPPORTED
+
+`NOT_SUPPORTED` 以非事务方式运行，如果当前存在事务，则把当前事务挂起。
+
+## NEVER
+
+`NEVER`：以非事务方式运行，如果当前存在事务，则抛出异常。
 
