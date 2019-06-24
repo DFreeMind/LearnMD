@@ -665,9 +665,11 @@ conda install pytorch-nightly -c pytorch
 
 参考：
 
-[源码安装 caffe2](https://caffe2.ai/docs/getting-started.html?platform=ubuntu&configuration=compile#install-with-gpu-support)
+- [源码安装 caffe2](https://caffe2.ai/docs/getting-started.html?platform=ubuntu&configuration=compile#install-with-gpu-support)
 
-[Pytorch源码编译简明指南](https://oldpan.me/archives/pytorch-build-simple-instruction)
+- [Pytorch源码编译简明指南](https://oldpan.me/archives/pytorch-build-simple-instruction)
+
+- [caffe2安装](https://www.jianshu.com/p/7a57e273b7f8)
 
 ---
 
@@ -755,11 +757,15 @@ git clone --recursive https://github.com/caffe2/caffe2.git
 ```bash
 cd caffe2
 make 
-cd build 
+cd build
 sudo make install
 ```
 
+如果是 Aanconda 安装环境，可以通过 cmake 设置安装的位置：
 
+```bash
+cmake -DCMAKE_PREFIX_PATH=~/anaconda2/envs/caffe2-py27 -DCMAKE_INSTALL_PREFIX=~/anaconda2/envs/caffe2-py27 ..
+```
 
 可能遇到的问题
 
@@ -767,13 +773,13 @@ sudo make install
 
 
 
-为了能与 DIGITS 更好的配合，可以参考此方式安装，<https://github.com/NVIDIA/DIGITS/blob/digits-6.0/docs/BuildCaffe.md> ，以上面的安装略不同。
+为了能与 DIGITS 更好的配合，可以参考此方式安装，<https://github.com/NVIDIA/DIGITS/blob/digits-6.0/docs/BuildCaffe.md> ，与上面的安装略不同。
 
 
 
 ## 测试是否安装成功
 
-检查pytorch是否安装成功：
+检查 caffe2 是否安装成功：
 
 
 
