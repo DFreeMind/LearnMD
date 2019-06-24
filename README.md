@@ -12,13 +12,26 @@
 
 # Java 学习资源
 
-1. [https://howtodoinjava.com](https://howtodoinjava.com/) Java 基础和相关框架教程、面试问题等
+## Java 中文博客
 
-2. [Java Tutorial for Beginners: Learn in 7 Days](<https://www.guru99.com/java-tutorial.html>)  7天学习 Java，包含视频教程
+- [csdn - Rico's Blogs](https://blog.csdn.net/justloveyou_?t=1)
+- [博客园-tony~博客小屋](https://www.cnblogs.com/ITtangtang/)
 
 
 
-## 反射
+## Java 国外博客
+
+- [Java Tutorial for Beginners: Learn in 7 Days](<https://www.guru99.com/java-tutorial.html>)  7天学习 Java，包含视频教程
+
+
+
+## 系列教程
+
+[https://howtodoinjava.com](https://howtodoinjava.com/) Java 基础和相关框架教程、面试问题等
+
+
+
+## 主题教程
 
 - [Java Reflection Tutorial](<http://tutorials.jenkov.com/java-reflection/index.html>)
 
