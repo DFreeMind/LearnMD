@@ -68,6 +68,14 @@ IDEA 会检测项目中是否有重复代码，通过设置可以将此提示去
 
 
 
+## 去除JavaScript == 提示
+
+`Settings -> Editor -> Inspections -> JavaScript -> Probable bugs -> Equality operator may cause type coercion`
+
+![image](https://wx3.sinaimg.cn/large/69d4185bgy1g4sf7mrwbgj20xi0js0vy.jpg)
+
+
+
 
 
 ## 自动生成 getter 与 setter 方法
@@ -98,7 +106,37 @@ IDEA Even Log面板无法正常显示日志的问题，有可能是日志所在�
 
 
 
-# 快捷键冲突
+## 项目修改热部署
+
+在 IDEA 开发 javaweb 项目，默认情况下修改资源之后需要重启项目之后才可以让修改生效，显然这样开发效率会受到很大的影响，通过如下的配置实现修改的热部署。
+
+首先打开 Tomcat 的配置，在部署时选择以 `exploded` 结尾的部署项目，而不是以 `war` 结尾的：
+
+![image](https://ws2.sinaimg.cn/large/69d4185bgy1g4mfciddfoj20db04fglm.jpg)
+
+之后回到 `server` 选项，在 `On 'Update' action` 以及 `On frame deactivation` 的选项中均选择 `Update classes and resources` 选项即可：
+
+![image](https://ws4.sinaimg.cn/large/69d4185bly1g4mfi95t4hj20p40e275c.jpg)
+
+
+
+
+
+
+
+# 快捷键
+
+## 设置快捷键
+
+**1、清除控制台快捷键**
+
+打开设置，找到 `keymap` ，在搜索栏中搜索 `clear all` ，双击该选项为其添加不产生冲突的快捷键，此处设置为 `Alt+C`：
+
+![image](https://wx2.sinaimg.cn/large/69d4185bgy1g4mq5kd6k2j20xh0jhabq.jpg)
+
+
+
+## 快捷键冲突
 
 有道词典快捷键：
 
