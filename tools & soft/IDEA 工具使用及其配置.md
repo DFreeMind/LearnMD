@@ -76,6 +76,18 @@ IDEA 会检测项目中是否有重复代码，通过设置可以将此提示去
 
 
 
+## 去除JS非高效代码提示
+
+`Settings -> Editor -> Inspections -> JavaScript -> General ->jQuery usage efficiency`
+
+![image](https://ws2.sinaimg.cn/large/69d4185bgy1g4tmnyjykjj20xh0js41e.jpg)
+
+## 去除未识别HTML标签提示
+
+`Settings -> Editor -> Inspections -> HTML`
+
+![image](https://wx4.sinaimg.cn/large/69d4185bgy1g4tqiksz54j20xi0js77a.jpg)
+
 
 
 ## 自动生成 getter 与 setter 方法
