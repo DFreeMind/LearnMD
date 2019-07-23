@@ -20,7 +20,15 @@
 `itar`：    Iterate elements of array 
 `ritar`：  Iterate elements of array in reverse order 
 
+# 快捷键频率
 
+## 较高
+
+
+
+## 一般
+
+- <kbd> Alt </kbd> + <kbd>Shift</kbd> + <kbd>Insert</kbd> ：按列选择
 
 
 
@@ -200,6 +208,7 @@
 | Alt + Shift + 左键双击 | 选择被双击的单词 / 中文句，按住不放，可以同时选择其他单词 / 中文句 `（必备）` |
 | Alt + Shift + 前方向键 | 移动光标所在行向上移动 `（必备）`                            |
 | Alt + Shift + 后方向键 | 移动光标所在行向下移动 `（必备）`                            |
+| <kbd> Alt </kbd> + <kbd>Shift</kbd> + <kbd>Insert</kbd> | 按列选择 |
 
 ## Ctrl + Shift + Alt
 
