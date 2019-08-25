@@ -54,6 +54,24 @@
 
 
 
+# 弹力设计
+
+## 相关资料
+
+Oracle：[High Availability Concepts and Best Practices](https://docs.oracle.com/cd/A91202_01/901_doc/rac.901/a89867/pshavdtl.htm)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
