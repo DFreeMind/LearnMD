@@ -66,6 +66,14 @@ Oracle：[High Availability Concepts and Best Practices](https://docs.oracle.com
 
 
 
+# 计算机
+
+## 数据
+
+- 数据对齐：[Data alignment: Straighten up and fly right](https://developer.ibm.com/articles/pa-dalign/#) 
+
+
+
 
 
 
