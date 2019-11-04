@@ -18,11 +18,11 @@ The features of JVM are as follows:
 - **Symbolic reference**: All types (class and interface) except for primitive data types are referred to through symbolic reference, instead of through explicit memory address-based reference. 
 - **Garbage collection**: A class instance is explicitly created by the user code and automatically destroyed by garbage collection.
 - **Guarantees platform independence by clearly defining the primitive data type**: A traditional language such as C/C++ has different int type size according to the platform. The JVM clearly defines the primitive data type to maintain its compatibility and guarantee platform independence.
-- **Network byte order**: The Java class file uses the network byte order. To maintain platform independence between the little endian used by Intel x86 Architecture and the big endian used by the RISC Series Architecture, a fixed byte order must be kept. Therefore, JVM uses the network byte order, which is used for network transfer. The network byte order is the big endian.
+- **Network byte order**: The Java class file uses the [network byte order]( https://betterexplained.com/articles/understanding-big-and-little-endian-byte-order/ ). To maintain platform independence between the little endian used by Intel x86 Architecture and the big endian used by the RISC Series Architecture, a fixed byte order must be kept. Therefore, JVM uses the network byte order, which is used for network transfer. The network byte order is the big endian.
 
  
 
-Sun Microsystems developed Java. However, any vendor can develop and provide a JVM by following the Java Virtual Machine Specification. For this reason, there are various JVMs, including Oracle Hotspot JVM and IBM JVM. The Dalvik VM in Google's Android operating system is a kind of JVM, though it does not follow the Java Virtual Machine Specification. Unlike Java VMs, which are stack machines, the Dalvik VM is a register-based architecture. Java bytecode is also converted into an register-based instruction set used by the Dalvik VM.
+Sun Microsystems developed Java. However, any vendor can develop and provide a JVM by following the Java Virtual Machine Specification. For this reason, there are various JVMs, including Oracle Hotspot JVM and IBM JVM. The Dalvik VM in Google's Android operating system is a kind of JVM, though it does not follow the Java Virtual Machine Specification. Unlike Java VMs, which are stack machines, the Dalvik VM is a [register-based](https://markfaction.wordpress.com/2012/07/15/stack-based-vs-register-based-virtual-machine-architecture-and-the-dalvik-vm/) (OR [Stack based vs Register based Virtual Machine Architecture, and the Dalvik VM](common/Stack based vs Register based Virtual Machine Architecture, and the Dalvik VM.md))architecture. Java bytecode is also converted into an register-based instruction set used by the Dalvik VM.
 
 ## Java bytecode
 
@@ -37,7 +37,9 @@ An application that had been running successfully no longer runs. Moreover, retu
  
 
 ```java
-Exception in thread "main" java.lang.NoSuchMethodError: com.nhn.user.UserAdmin.addUser(Ljava/lang/String;)V    at com.nhn.service.UserService.add(UserService.java:14)    at com.nhn.service.UserService.main(UserService.java:19)
+Exception in thread "main" java.lang.NoSuchMethodError: com.nhn.user.UserAdmin.addUser(Ljava/lang/String;)V    
+    at com.nhn.service.UserService.add(UserService.java:14)    
+    at com.nhn.service.UserService.main(UserService.java:19)
 ```
 
  
