@@ -37,12 +37,11 @@ An application that had been running successfully no longer runs. Moreover, retu
  
 
 ```java
-Exception in thread "main" java.lang.NoSuchMethodError: com.nhn.user.UserAdmin.addUser(Ljava/lang/String;)V    
+Exception in thread "main" java.lang.NoSuchMethodError: 
+com.nhn.user.UserAdmin.addUser(Ljava/lang/String;)V    
     at com.nhn.service.UserService.add(UserService.java:14)    
     at com.nhn.service.UserService.main(UserService.java:19)
 ```
-
- 
 
 The application code is as follows, and no changes to it have been made.
 
@@ -74,7 +73,7 @@ public void addUser(String userName) {
 
 
 
-In short, the addUser() method which has no return value has been changed to a method that returns the User class instance. However, the application code has not been changed, since it does not use the return value of the addUser() method.
+In short, the `addUser()` method which has no return value has been changed to a method that returns the User class instance. However, the application code has not been changed, since it does not use the return value of the addUser() method.
 
 > At first glance, the com.nhn.user.UserAdmin.addUser() method seems to still exist, but if so, **why does NoSuchMethodError occur?**
 
@@ -88,7 +87,7 @@ You will see this through the following error message.
 java.lang.NoSuchMethodError: com.nhn.user.UserAdmin.addUser(Ljava/lang/String;)V
 ```
 
-*NoSuchMethodError* has occurred since the "*com.nhn.user.UserAdmin.addUser(Ljava/lang/String;)V*" method could not be found. Take a look at "Ljava/lang/String;" and the last "V". In the expression of Java Bytecode, *"L;"* is the class instance. This means that the addUser() method returns one java/lang/String object as a parameter. In the library of this case, the parameter has not been changed, so it is normal. The last *"V"* of the message stands for the return value of the method. In the expression of Java Bytecode, "V" means that it has no return value. In short, the error message means that one java.lang.String object has been returned as a parameter and the com.nhn.user.UserAdmin.addUser method without any return value has not been found.
+*NoSuchMethodError* has occurred since the "*com.nhn.user.UserAdmin.addUser(Ljava/lang/String;)V*" method could not be found. Take a look at "Ljava/lang/String;" and the last "V". In the expression of Java Bytecode, *"L;"* is the class instance. This means that the `addUser()` method returns one java/lang/String object as a parameter. In the library of this case, the parameter has not been changed, so it is normal. The last *"V"* of the message stands for the return value of the method. In the expression of Java Bytecode, "V" means that it has no return value. In short, the error message means that one java.lang.String object has been returned as a parameter and the com.nhn.user.UserAdmin.addUser method without any return value has not been found.
 
 Since the application code has been compiled to the previous library, the class file defined that a method that returns "V" should be invoked. However, in the changed library, the method that returned "V" did not exist, but the method that returned "Lcom/nhn/user/User;" has been added. Therefore, a NoSuchMethodError occurred.
 
@@ -98,9 +97,7 @@ Since the application code has been compiled to the previous library, the class 
 
 Let's go back to the Java Bytecode. **Java Bytecode** is the essential element of JVM. The JVM is an emulator that emulates the Java Bytecode. Java compiler does not directly convert high-level language such as C/C++ to the machine language (direct CPU instruction); it converts the Java language that the developer understands to the Java Bytecode that the JVM understands. Since Java bytecode has no platform-dependent code, it is executable on the hardware where the JVM (accurately, the JRE of the same profile) has been installed, even when the CPU or OS is different (a class file developed and compiled on the Windows PC can be executed on the Linux machine without additional change.) The size of the compiled code is almost identical to the size of the source code, making it easy to transfer and execute the compiled code via  the network.
 
-The class file itself is a binary file that cannot be understood by a human. To manage this file, JVM vendors provide **javap**, the disassembler. The result of using javap is called Java assembly. In the above case, the Java assembly below is obtained by disassembling the UserService.add() method of the application code with the javap -c option.
-
- 
+The class file itself is a binary file that cannot be understood by a human. To manage this file, JVM vendors provide **javap**, the disassembler. The result of using javap is called Java assembly. In the above case, the Java assembly below is obtained by disassembling the` UserService.add()` method of the application code with the javap -c option.
 
 ```java
 public void add(java.lang.String);
@@ -112,20 +109,14 @@ public void add(java.lang.String);
    8:   return
 ```
 
- 
-
-In this Java assembly, the addUser() method is invoked by the fourth row, "5: invokevirtual #23;". This means that the method corresponding to the 23rd index should be invoked. The method of the 23rd index is annotated by the javap program. The **invokevirtual** is the OpCode (operation code) of the most basic command that invokes a method in the Java Bytecode. For reference, there are four OpCodes that invoke a method in the Java Bytecode: *invokeinterface, invokespecial, invokestatic*, and *invokevirtual*. The meaning of each OpCode is as follows.
-
- 
+In this Java assembly, the `addUser()` method is invoked by the fourth row, "5: invokevirtual #23;". This means that the method corresponding to the 23rd index should be invoked. The method of the 23rd index is annotated by the javap program. The **invokevirtual** is the OpCode (operation code) of the most basic command that invokes a method in the Java Bytecode. For reference, there are four OpCodes that invoke a method in the Java Bytecode: *invokeinterface, invokespecial, invokestatic*, and *invokevirtual*. The meaning of each OpCode is as follows.
 
 - **invokeinterface**: Invokes an interface method
 - **invokespecial**: Invokes an initializer, private method, or superclass method
 - **invokestatic**: Invokes static methods
 - **invokevirtual**: Invokes instance methods
 
- 
-
-The instruction set of Java Bytecode consists of OpCode and Operand. The OpCode such as invokevirtual requires a 2-byte Operand.
+ The instruction set of Java Bytecode consists of OpCode and Operand. The OpCode such as invokevirtual requires a 2-byte Operand.
 
 By compiling the application code above with the updated library and then disassembling it, the following result will be obtained.
 
@@ -140,25 +131,19 @@ public void add(java.lang.String);
    9:   return
 ```
 
- 
-
 You can see that the method corresponding to the 23rd has been converted to the method that returns "Lcom/nhn/user/User;".
 
 > **In the disassembled result above, what does the number in front of the code mean?**
 
 It is the byte number. Perhaps this is the reason why the code executed by the JVM is called Java "Byte"code. In short, the bytecode instruction OpCodes such as *aload_0*, *getfield*, and *invokevirtual* are expressed as a 1-byte byte number. (aload_0 = 0x2a, getfield = 0xb4, invokevirtual = 0xb6) Therefore, the maximum number of Java Bytecode instruction OpCodes is 256.
 
-OpCodes such as aload_0 and aload_1 do not need any Operand. Therefore, the next byte of aload_0 is the OpCode of the next instruction. However, getfield and invokevirtual need the 2-byte Operand. Therefore, the next instruction of getfield on the first byte is written on the fourth byte by skipping two bytes. The bytecode shown through Hex Editor is as follows.
-
- 
+OpCodes such as `aload_0` and `aload_1` do not need any Operand. Therefore, the next byte of `aload_0` is the OpCode of the next instruction. However, `getfield` and `invokevirtual` need the 2-byte Operand. Therefore, the next instruction of `getfield` on the first byte is written on the fourth byte by skipping two bytes. The bytecode shown through Hex Editor is as follows.
 
 ```java
 2a b4 00 0f 2b b6 00 17 57 b1
 ```
 
- 
-
-In the Java Bytecode, the class instance is expressed as "L;" and void is expressed as "V". In this way, other types have their own expressions. The table below summarizes the expressions.
+ In the Java Bytecode, the class instance is expressed as "L;" and void is expressed as "V". In this way, other types have their own expressions. The table below summarizes the expressions.
 
 #### Table 1: Type Expression in Java Bytecode
 
@@ -194,15 +179,11 @@ Before explaining the Java class file format, let's review an example that frequ
 
 When writing and executing JSP on Tomcat, the JSP did not run, and the following error occurred.
 
- 
-
 ```java
-Servlet.service() for servlet jsp threw exception org.apache.jasper.JasperException: Unable to compile class for JSP Generated servlet error:The code of method _jspService(HttpServletRequest, HttpServletResponse) is exceeding the 65535 bytes limit"
+Servlet.service() for servlet jsp threw exception org.apache.jasper.JasperException: 
+Unable to compile class for JSP Generated servlet error:The code of method 
+_jspService(HttpServletRequest, HttpServletResponse) is exceeding the 65535 bytes limit"
 ```
-
- 
-
- 
 
 ### Reasons
 
@@ -212,25 +193,16 @@ I will present the meaning of the 65535 byte limit and why it has been set in mo
 
 The branch/jump instructions used in the Java Bytecode are "goto" and "jsr".
 
- 
-
 ```java
 goto [branchbyte1] [branchbyte2]jsr [branchbyte1] [branchbyte2]
 ```
 
- 
-
- 
-
 Both of the two receive 2-byte signed branch offset as their Operand so that they can be expanded to the 65535th index at a maximum. However, to support more sufficient branch, Java Bytecode prepares "goto_w" and "jsr_w" that receive 4-byte signed branch offset.
 
- 
-
 ```java
-goto_w [branchbyte1] [branchbyte2] [branchbyte3] [branchbyte4]jsr_w [branchbyte1] [branchbyte2] [branchbyte3] [branchbyte4]
+goto_w [branchbyte1] [branchbyte2] [branchbyte3] [branchbyte4]
+jsr_w [branchbyte1] [branchbyte2] [branchbyte3] [branchbyte4]
 ```
-
- 
 
 With the two, branch is available with an index exceeding 65535. Therefore, the 65535 byte limit of Java method may be overcome. However, due to various other limits of the Java class file format, the Java method still cannot exceed 65535 bytes. To view other limits, I will simply explain the class file format.
 
@@ -253,26 +225,23 @@ ClassFile {
     u2 methods_count;
     method_info methods[methods_count];
     u2 attributes_count;
-    attribute_info attributes[attributes_count];}
+    attribute_info attributes[attributes_count];
+}
 ```
-
- 
-
- 
 
 The above is included in "4.1. The ClassFile Structure" of "The Java Virtual Machine Specification, Second Edition".
 
-The first 16 bytes of the UserService.class file disassembled earlier are shown as follows in the Hex Editor.
+The first 16 bytes of the `UserService.class` file disassembled earlier are shown as follows in the Hex Editor.
 
+```java
 ca fe ba be 00 00 00 32 00 28 07 00 02 01 00 1b
+```
 
 With this value, see the class file format.
 
- 
-
-- **magic**: The first 4 bytes of the class file are the magic number. This is a pre-specified value to distinguish the Java class file. As shown in the Hex Editor above, the value is always 0xCAFEBABE. In short, when the first 4 bytes of a file is 0xCAFEBABE, it can be regarded as the Java class file. This is a kind of "witty" magic number related to the name "Java".
-- **minor_version, major_version**: The next 4 bytes indicate the class version. As the UserService.class file is 0x00000032, the class version is 50.0. The version of a class file compiled by JDK 1.6 is 50.0, and the version of a class file compiled by JDK 1.5 is 49.0. The JVM must maintain backward compatibility with class files compiled in a lower version than itself. On the other hand, when a upper-version class file is executed in the lower-version JVM, java.lang.UnsupportedClassVersionError occurs.
-- **constant_pool_count, constant_pool[]**: Next to the version, the class-type constant pool information is described. This is the information included in the Runtime Constant Pool area, which will be explained later. While loading the class file, the JVM includes the constant_pool information in the Runtime Constant Pool area of the method area. As the constant_pool_count of the UserService.class file is 0x0028, you can see that the constant_pool has (40-1) indexes, 39 indexes.
+- **magic**: The first 4 bytes of the class file are the magic number. This is a pre-specified value to distinguish the Java class file. As shown in the Hex Editor above, the value is always **0xCAFEBABE**. In short, when the first 4 bytes of a file is **0xCAFEBABE**, it can be regarded as the Java class file. This is a kind of "witty" magic number related to the name "Java".
+- **minor_version, major_version**: The next 4 bytes indicate the class version. As the `UserService.class` file is 0x00000032, the class version is 50.0. The version of a class file compiled by JDK 1.6 is 50.0, and the version of a class file compiled by JDK 1.5 is 49.0. The JVM must maintain backward compatibility with class files compiled in a lower version than itself. On the other hand, when a upper-version class file is executed in the lower-version JVM, java.lang.UnsupportedClassVersionError occurs.
+- **constant_pool_count, constant_pool[]**: Next to the version, the class-type constant pool information is described. This is the information included in the Runtime Constant Pool area, which will be explained later. While loading the class file, the JVM includes the constant_pool information in the Runtime Constant Pool area of the method area. As the constant_pool_count of the `UserService.class ` file is `0x0028`, you can see that the constant_pool has (40-1) indexes, 39 indexes.
 - **access_flags**: This is the flag that shows the modifier information of a class; in other words, it shows public, final, abstract or whether or not to interface.
 - **this_class, super_class**: The index in the constant_pool for the class corresponding to this and super, respectively.
 - **interfaces_count, interfaces[]**: The index in the the constant_pool for the number of interfaces implemented by the class and each interface.
@@ -280,15 +249,10 @@ With this value, see the class file format.
 - **methods_count, methods[]**: The number of methods in a class and the methods information of the class. The methods information includes the methods name, type and number of the parameters, return type, modifier, index in the constant_pool, execution code of the method, and exception information.
 - **attributes_count, attributes[]**: The attribute_info structure has various attributes. For field_info or method_info, attribute_info is used.
 
- 
-
 The javap program briefly shows the class file format in a format that users can read. When UserService.class is analyzed using the "javap -verbose" option, the following contents are printed.
-
- 
 
 ```java
 Compiled from "UserService.java"
- 
 public class com.nhn.service.UserService extends java.lang.Object
   SourceFile: "UserService.java"
   minor version: 0
@@ -320,10 +284,6 @@ public void add(java.lang.String);
 }
 ```
 
- 
-
- 
-
 Due to a lack of space, I have extracted some parts from the entire printout. The entire printout shows you the various information included in the constant pool and the contents of each method.
 
 The 65535 byte limit of method size is related to the contents of **method_info struct**. The method_info struct has Code, LineNumberTable, and LocalVariableTable attribute, as shown in the "javap -verbose" print shown above. All of the values corresponding to the length of LineNumberTable, LocalVariableTable, and exception_table included in the Code attribute are fixed at 2 bytes. Therefore, the method size cannot exceed the length of LineNumberTable, LocalVariableTable, and exception_table, and is limited to 65535 bytes.
@@ -344,7 +304,7 @@ To prepare for such cases, the Java class loader is verified through a very stri
 
 The code written in Java is executed by following the process shown in the figure below. 
 
- ![java-code-execution-process.png](https://www.cubrid.org/files/attach/images/1750/751/001/b94d4a812724c780250e0aa47711e40e.png)
+![java-code-execution-process.png](https://www.cubrid.org/files/attach/images/1750/751/001/b94d4a812724c780250e0aa47711e40e.png)
 
 **Figure 1: Java Code Execution Process.**
 
@@ -354,33 +314,25 @@ A class loader loads the compiled Java Bytecode to the Runtime Data Areas, and t
 
 Java provides a dynamic load feature; it loads and links the class when it refers to a class for the first time at runtime, not compile time. JVM's class loader executes the dynamic load. The features of Java class loader are as follows:
 
- 
-
 - **Hierarchical Structure**: Class loaders in Java are organized into a hierarchy with a parent-child relationship. The Bootstrap Class Loader is the parent of all class loaders.
 - **Delegation mode**: Based on the hierarchical structure, load is delegated between class loaders. When a class is loaded, the parent class loader is checked to determine whether or not the class is in the parent class loader. If the upper class loader has the class, the class is used. If not, the class loader requested for loading loads the class.
 - **Visibility limit**: A child class loader can find the class in the parent class loader; however, a parent class loader cannot find the class in the child class loader.
 - **Unload is not allowed**: A class loader can load a class but cannot unload it. Instead of unloading, the current class loader can be deleted, and a new class loader can be created.
 
- 
-
 Each class loader has its namespace that stores the loaded classes. When a class loader loads a class, it searches the class based on FQCN (Fully Qualified Class Name) stored in the namespace to check whether or not the class has been already loaded. Even if the class has an identical FQCN but a different namespace, it is regarded as a different class. A different namespace means that the class has been loaded by another class loader.
 
 The following figure illustrates the class loader delegation model.
 
- ![class-loader-delegation-model.png](https://www.cubrid.org/files/attach/images/1750/751/001/0cc04fbe3891ad4f4c4e8d7bb1052e8a.png)
+![class-loader-delegation-model.png](https://www.cubrid.org/files/attach/images/1750/751/001/0cc04fbe3891ad4f4c4e8d7bb1052e8a.png)
 
 **Figure 2: Class Loader Delegation Model.**
 
 When a class loader is requested for class load, it checks whether or not the class exists in the class loader cache, the parent class loader, and itself, in the order listed. In short, it checks whether or not the class has been loaded in the class loader cache. If not, it checks the parent class loader. If the class is not found in the bootstrap class loader, the requested class loader searches for the class in the file system.
 
- 
-
 - **Bootstrap class loader**: This is created when running the JVM. It loads Java APIs, including object classes. Unlike other class loaders, it is implemented in native code instead of Java.
 - **Extension class loader**: It loads the extension classes excluding the basic Java APIs. It also loads various security extension functions.
 - **System class loader**: If the bootstrap class loader and the extension class loader load the JVM components, the system class loader loads the application classes. It loads the class in the $CLASSPATH specified by the user.
 - **User-defined class loader**: This is a class loader that an application user directly creates on the code.
-
- 
 
 Frameworks such as Web application server (WAS) use it to make Web applications and enterprise applications run independently. In other words, this guarantees the independence of applications through class loader delegation model. Such a WAS class loader structure uses a hierarchical structure that is slightly different for each WAS vendor.
 
@@ -392,51 +344,39 @@ If a class loader finds an unloaded class, the class is loaded and linked by fol
 
 Each stage is described as follows.
 
- 
-
 - **Loading**: A class is obtained from a file and loaded to the JVM memory.
 - **Verifying**: Check whether or not the read class is configured as described in the Java Language Specification and JVM specifications. This is the most complicated test process of the class load processes, and takes the longest time. Most cases of the JVM TCK test cases are to test whether or not a verification error occurs by loading wrong classes.
 - **Preparing**: Prepare a data structure that assigns the memory required by classes and indicates the fields, methods, and interfaces defined in the class.
 - **Resolving**: Change all symbolic references in the constant pool of the class to direct references.
 - **Initializing**: Initialize the class variables to proper values. Execute the static initializers and initialize the static fields to the configured values.
 
- 
-
 The JVM specification defines the tasks. However, it allows flexible application of the execution time.
 
 ### Runtime Data Areas
 
- ![runtime-data-access-configuration.png](https://www.cubrid.org/files/attach/images/1750/751/001/62708f0fa456f6c70661446194ae4fd2.png)
+![runtime-data-access-configuration.png](https://www.cubrid.org/files/attach/images/1750/751/001/62708f0fa456f6c70661446194ae4fd2.png)
 
 **Figure 4: Runtime Data Areas Configuration.**
 
 Runtime Data Areas are the memory areas assigned when the JVM program runs on the OS. The runtime data areas can be divided into 6 areas. Of the six, one PC Register, JVM Stack, and Native Method Stack are created for one thread. Heap, Method Area, and Runtime Constant Pool are shared by all threads.
 
- 
-
 - **PC register**: One PC (Program Counter) register exists for one thread, and is created when the thread starts. PC register has the address of a JVM instruction being executed now.
-- **JVM stack**: One JVM stack exists for one thread, and is created when the thread starts. It is a stack that saves the struct (Stack Frame). The JVM just pushes or pops the stack frame to the JVM stack. If any exception occurs, each line of the stack trace shown as a method such as printStackTrace() expresses one stack frame.
+- **JVM stack**: One JVM stack exists for one thread, and is created when the thread starts. It is a stack that saves the struct (Stack Frame). The JVM just pushes or pops the stack frame to the JVM stack. If any exception occurs, each line of the stack trace shown as a method such as `printStackTrace()` expresses one stack frame.
 
- 
-
- ![jvm-stack-configuration.png](https://www.cubrid.org/files/attach/images/1750/751/001/12e67f793e0b88cc6fe46d8085e8c326.png)
+![jvm-stack-configuration.png](https://www.cubrid.org/files/attach/images/1750/751/001/12e67f793e0b88cc6fe46d8085e8c326.png)
 
 **Figure 5: JVM Stack Configuration.**
 
-− Stack frame: One stack frame is created whenever a method is executed in the JVM, and the stack frame is added to the JVM stack of the thread. When the method is ended, the stack frame is removed. Each stack frame has the reference for local variable array, Operand stack, and runtime constant pool of a class where the method being executed belongs. The size of local variable array and Operand stack is determined while compiling. Therefore, the size of stack frame is fixed according to the method.
+- **Stack frame:** One stack frame is created whenever a method is executed in the JVM, and the stack frame is added to the JVM stack of the thread. When the method is ended, the stack frame is removed. Each stack frame has the reference for local variable array, Operand stack, and runtime constant pool of a class where the method being executed belongs. The size of local variable array and Operand stack is determined while compiling. Therefore, the size of stack frame is fixed according to the method.
 
-− Local variable array: It has an index starting from 0. 0 is the reference of a class instance where the method belongs. From 1, the parameters sent to the method are saved. After the method parameters, the local variables of the method are saved.
+- **Local variable array:** It has an index starting from 0. 0 is the reference of a class instance where the method belongs. From 1, the parameters sent to the method are saved. After the method parameters, the local variables of the method are saved.
 
-− Operand stack: An actual workspace of a method. Each method exchanges data between the Operand stack and the local variable array, and pushes or pops other method invoke results. The necessary size of the Operand stack space can be determined during compiling. Therefore, the size of the Operand stack can also be determined during compiling.
-
- 
+- **Operand stack:** An actual workspace of a method. Each method exchanges data between the Operand stack and the local variable array, and pushes or pops other method invoke results. The necessary size of the Operand stack space can be determined during compiling. Therefore, the size of the Operand stack can also be determined during compiling.
 
 - **Native method stack**: A stack for native code written in a language other than Java. In other words, it is a stack used to execute C/C++ codes invoked through JNI (Java Native Interface). According to the language, a C stack or C++ stack is created.
 - **Method area**: The method area is shared by all threads, created when the JVM starts. It stores runtime constant pool, field and method information, static variable, and method bytecode for each of the classes and interfaces read by the JVM. The method area can be implemented in various formats by JVM vendor. Oracle Hotspot JVM calls it Permanent Area or Permanent Generation (PermGen). The garbage collection for the method area is optional for each JVM vendor.
 - **Runtime constant pool**: An area that corresponds to the constant_pool table in the class file format. This area is included in the method area; however, it plays the most core role in JVM operation. Therefore, the JVM specification separately describes its importance. As well as the constant of each class and interface, it contains all references for methods and fields. In short, when a method or field is referred to, the JVM searches the actual address of the method or field on the memory by using the runtime constant pool.
 - **Heap**: A space that stores instances or objects, and is a target of garbage collection. This space is most frequently mentioned when discussing issues such as JVM performance. JVM vendors can determine how to configure the heap or not to collect garbage.
-
- 
 
 Let's go back to the disassembled bytecode we discussed previously. 
 
@@ -451,13 +391,9 @@ public void add(java.lang.String);
    9:   return
 ```
 
-  
-
 Comparing the disassembled code and the assembly code of the x86 architecture that we sometimes see, the two have a similar format, OpCode; however, there is a difference in that Java Bytecode does not write register name, memory addressor, or offset on the Operand. As described before, the JVM uses stack. Therefore, it does not use register, unlike the x86 architecture that uses registers, and it uses index numbers such as 15 and 23 instead of memory addresses since it manages the memory by itself. The 15 and 23 are the indexes of the constant pool of the current class (here, UserService class). In short, the JVM creates a constant pool for each class, and the pool stores the reference of the actual target.
 
 Each row of the disassembled code is interpreted as follows.
-
- 
 
 - **aload_0**: Add the #0 index of the local variable array to the Operand stack. The #0 index of the local variable array is always this, the reference for the current class instance.
 - **getfield #15**: In the current class constant pool, add the #15 index to the Operand stack. UserAdmin admin field is added. Since the admin field is a class instance, a reference is added.
@@ -465,8 +401,6 @@ Each row of the disassembled code is interpreted as follows.
 - **invokevirtual #23**: Invoke the method corresponding to the #23 index in the current class constant pool. At this time, the reference added by using getfield and the parameter added by using aload_1 are sent to the method to invoke. When the method invocation is completed, add the return value to the Operand stack.
 - **pop**: Pop the return value of invoking by using invokevirtual from the Operand stack. You can see that the code compiled by the previous library has no return value. In short, the previous has no return value, so there was no need to pop the return value from the stack.
 - **return**: Complete the method.
-
- 
 
 The following figure will help you understand the explanation.
 
@@ -484,24 +418,20 @@ The bytecode that is assigned to the runtime data areas in the JVM via class loa
 
 But the Java Bytecode is written in a language that a human can understand, rather than in the language that the machine directly executes. Therefore, the execution engine must change the bytecode to the language that can be executed by the machine in the JVM. The bytecode can be changed to the suitable language in one of two ways.
 
- 
-
 - **Interpreter**: Reads, interprets and executes the bytecode instructions one by one. As it interprets and executes instructions one by one, it can quickly interpret one bytecode, but slowly executes the interpreted result. This is the disadvantage of the interpret language. The 'language' called Bytecode basically runs like an interpreter.
 - **JIT (Just-In-Time) compiler**: The JIT compiler has been introduced to compensate for the disadvantages of the interpreter. The execution engine runs as an interpreter first, and at the appropriate time, the JIT compiler compiles the entire bytecode to change it to native code. After that, the execution engine no longer interprets the method, but directly executes using native code. Execution in native code is much faster than interpreting instructions one by one. The compiled code can be executed quickly since the native code is stored in the cache. 
 
- 
+However, it takes more time for JIT compiler to compile the code than for the interpreter to interpret the code one by one. Therefore, if the code is to be executed just once, it is better to interpret it instead of compiling. Therefore, the JVMs that use the JIT compiler internally check how frequently the method is executed and compile the method only when the frequency is higher than a certain level. 
 
-However, it takes more time for JIT compiler to compile the code than for the interpreter to interpret the code one by one. Therefore, if the code is to be executed just once, it is better to interpret it instead of compiling. Therefore, the JVMs that use the JIT compiler internally check how frequently the method is executed and compile the method only when the frequency is higher than a certain level.
-
- ![java-compiler-and-jit-compiler.png](https://www.cubrid.org/files/attach/images/1750/751/001/9a0b4b89f0e07fdb147356562d29a4b4.png)
+![java-compiler-and-jit-compiler.png](https://www.cubrid.org/files/attach/images/1750/751/001/9a0b4b89f0e07fdb147356562d29a4b4.png)
 
 **Figure 7: Java Compiler and JIT Compiler.**
 
 How the execution engine runs is not defined in the JVM specifications. Therefore, JVM vendors improve their execution engines using various techniques, and introduce various types of JIT compilers. 
 
-Most JIT compilers run as shown in the figure below: 
+Most JIT compilers run as shown in the figure below:  
 
- ![jit-compiler.png](https://www.cubrid.org/files/attach/images/1750/751/001/a3a96a6fa297c5a591e4f40090ae66de.png)
+![jit-compiler.png](https://www.cubrid.org/files/attach/images/1750/751/001/a3a96a6fa297c5a591e4f40090ae66de.png)
 
 **Figure 8: JIT Compiler.**
 
@@ -509,11 +439,11 @@ The JIT compiler converts the bytecode to an intermediate-level expression, IR (
 
 Oracle Hotspot VM uses a JIT compiler called Hotspot Compiler. It is called Hotspot because Hotspot Compiler searches the 'Hotspot' that requires compiling with the highest priority through profiling, and then it compiles the hotspot to native code. If the method that has the bytecode compiled is no longer frequently invoked, in other words, if the method is not the hotspot any more, the Hotspot VM removes the native code from the cache and runs in interpreter mode. The Hotspot VM is divided into the Server VM and the Client VM, and the two VMs use different JIT compilers.
 
-![hotspot-client-vm-and-server-vm.png](https://www.cubrid.org/files/attach/images/1750/751/001/33e6aa646a3ce5deab1c4b6be86faeca.png) 
+![hotspot-client-vm-and-server-vm.png](https://www.cubrid.org/files/attach/images/1750/751/001/33e6aa646a3ce5deab1c4b6be86faeca.png)
 
 **Figure 9: Hotspot Client VM and Server VM.**
 
-The client VM and the server VM use an identical runtime; however, they use different JIT compilers, as shown in the above figure. The client VM and the server VM use an identical runtime, however, they use different JIT compilers as shown in the above figure. Advanced Dynamic Optimizing Compiler used by the server VM uses more complex and diverse performance optimization techniques.
+The client VM and the server VM use an identical runtime, however, they use different JIT compilers as shown in the above figure. Advanced Dynamic Optimizing Compiler used by the server VM uses more complex and diverse performance optimization techniques.
 
 IBM JVM has introduced AOT (Ahead-Of-Time) Compiler from IBM JDK 6 as well as the JIT compiler. This means that many JVMs share the native code compiled through the shared cache. In short, the code that has been already compiled through the AOT compiler can be used by another JVM without compiling. In addition, IBM JVM provides a fast way of execution by pre-compiling code to JXE (Java EXecutable) file format using the AOT compiler.
 
@@ -529,15 +459,11 @@ Hotspot compiler has been introduced to Oracle Hotspot VM from version 1.3, and 
 
 On 28th July, 2011, Oracle released Java SE 7 and updated the JVM specifications to Java SE 7 version. After releasing "The Java Virtual Machine Specification, Second Edition" in 1999, it took 12 years for Oracle to release the updated version. The updated version includes various changes and modifications accumulated over 12 years, and describes more clear specifications. In addition, it reflects the contents included in "The Java Language Specification, Java SE 7 Edition" released with Java SE 7. The major changes can be summarized as follows:
 
- 
-
 - Generics introduced from Java SE 5.0, supporting variable argument method
 - Bytecode verification process technique changed since Java SE 6
 - Added invokedynamic instruction and related class file formats for supporting dynamic type languages
 - Deleted the description of the concept of the Java language itself and referred reader to the Java language specifications
 - Deleted the description on Java Thread and Lock, and transferred these to the Java language specifications
-
- 
 
 The biggest change of these is the addition of invokedynamic instruction. This means that a change was made in the JVM internal instruction sets, as the JVM started to support dynamic type languages of which type is not fixed, such as script languages, as well as Java language from Java SE 7. The OpCode 186 which had not been used previously has been assigned to the new instruction, invokedynamic, and new contents have been added to the class file format to support the invokedynamic.
 
@@ -553,28 +479,23 @@ Java SE 7 adds various grammars and features. However, compared to the various c
 
 For example, the following code has been written.
 
- 
-
 ```java
 // SwitchTest
 public class SwitchTest {
     public int doSwitch(String str) {
         switch (str) {
-        case "abc":        return 1;
-        case "123":        return 2;
-        default:         return 0;
+        case "abc":        
+                return 1;
+        case "123":        
+                return 2;
+        default:         
+                return 0;
         }
     }
 }
 ```
 
- 
-
- 
-
 Since it is a new function of Java SE 7, it cannot be compiled using the Java compiler for Java SE 6 or lower versions. Compile it using the javac of Java SE 7. The following screen is the compiling result printed by using javap –c.
-
- 
 
 ```java
 C:Test>javap -c SwitchTest.classCompiled from "SwitchTest.java"
@@ -623,21 +544,17 @@ public class SwitchTest {
       93: ireturn
 ```
 
- 
+A significantly longer bytecode than the Java source code has been created. First, you can see that lookupswitch instruction has been used for `switch()` statement in Java bytecode. However, two lookupswitch instructions have been used, not the one lookupswitch instruction. When disassembling the case in which int has been added to `switch()` statement, only one lookupswitch instruction has been used. This means that the `switch()` statement has been divided into two statements to process the string. See the annotation of the #5, #39, and #53 byte instructions to see how the `switch()` statement has processed the string.
 
- 
+In the #5 and #8 byte, first, `hashCode()` method has been executed and `switch(int)` has been executed by using the result of executing `hashCode()` method. In the braces of the lookupswitch instruction, branch is made to the different location according to the hashCode result value. String "abc" is hashCode result value 96354, and is moved to #36 byte. String "123" is hashCode result value 48690, and is moved to #50 byte.
 
-A significantly longer bytecode than the Java source code has been created. First, you can see that lookupswitch instruction has been used for switch() statement in Java bytecode. However, two lookupswitch instructions have been used, not the one lookupswitch instruction. When disassembling the case in which int has been added to switch() statement, only one lookupswitch instruction has been used. This means that the switch() statement has been divided into two statements to process the string. See the annotation of the #5, #39, and #53 byte instructions to see how the switch() statement has processed the string.
-
-In the #5 and #8 byte, first, hashCode() method has been executed and switch(int) has been executed by using the result of executing hashCode() method. In the braces of the lookupswitch instruction, branch is made to the different location according to the hashCode result value. String "abc" is hashCode result value 96354, and is moved to #36 byte. String "123" is hashCode result value 48690, and is moved to #50 byte.
-
-In the #36, #37, #39, and #42 bytes, you can see that the value of the str variable received as an argument is compared using the String "abc" and the equals() method. If the results are identical, '0' is inserted to the #3 index of the local variable array, and the string is moved to the #61 byte.
+In the #36, #37, #39, and #42 bytes, you can see that the value of the str variable received as an argument is compared using the String "abc" and the `equals()` method. If the results are identical, '0' is inserted to the #3 index of the local variable array, and the string is moved to the #61 byte.
 
 In this way, in the #50, #51, #53, and #56 bytes, you can see that the value of the str variable received as an argument is compared by using the String "123" and the equals() method. If the results are identical, '1' is inserted to the #3 index of the local variable array and the string is moved to the #61 byte.
 
 In the #61 and #62 bytes, the value of the #3 index of the local variable array, i.e., '0', '1', or any other value, is lookupswitched and branched.
 
-In other words, in Java code, the value of the str variable received as the switch() argument is compared using the hashCode() method and the equals() method. With the result int value, switch() is executed.
+In other words, in Java code, the value of the str variable received as the `switch()` argument is compared using the `hashCode()` method and the `equals()` method. With the result int value, `switch()` is executed.
 
 In this result, the compiled bytecode is not different from the previous JVM specifications. The new feature of Java SE 7, String in switch is processed by the Java compiler, not by the JVM itself. In this way, other new features of Java SE 7 will also be processed by the Java compiler.
 
@@ -648,3 +565,4 @@ I don't think that we need to review how Java has been developed to use Java wel
 Besides the description mentioned here, the JVM has various features and technologies. The JVM specifications provide a flexible specification for JVM vendors to provide more advanced performance so that various technologies can be applied by the vendor. In particular, garbage collection is the technique used by most languages that provides usability similar to that of a VM, the latest and state-of-the-art technique in its performance. However, as this has been discussed in many more prominent studies, I did not explain it deeply in this article.
 
 For Korean speakers, if you need more information on the internal structure of JVM, I recommend you to refer to "**Java Performance Fundamental**" (Hando Kim, Seoul, EXEM, 2009). I have referenced this book as well as the JVM specifications to write this article. For English speaking readers, there should be many books covering Java Performance topic.
+
