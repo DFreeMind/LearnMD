@@ -148,4 +148,3 @@ I will talk about the **GC tuning** in the next issue, but I would like to ask y
 In this issue, we have only glanced at the GC for Java. Please look forward to our next issue, where I will talk about **how to monitor the Java GC status and tune GC**. 
 
 I would like to note that I referred to a new book released in December 2011 called "*Java Performance*" ([Amazon](http://amzn.com/0137142528), it can also be viewed from safari online, if the company provides an account), as well as “*Memory Management in the Java HotSpotTM Virtual Machine*,” a white paper provided by the Oracle website. (The book is different from "*Java Performance Tuning*.")
-
