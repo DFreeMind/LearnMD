@@ -167,7 +167,7 @@ So, in short, the total heap consumption before the collection was 9,556,775K. O
 
 After understanding how Parallel GC cleans the Young Generation, we are ready to look at how the whole heap is being cleaned by analyzing the next snippet from the GC logs:
 
-![image-20191107112158878](../../../../Work/HDSXGit/hbyh_temp/zxzhyh/assets/image-20191107112158878.png)
+![image](https://tvax3.sinaimg.cn/large/69d4185bgy1g8pi9rjm3vj20l104c3z0.jpg)
 
 1. `2015-05-26T14:27:41.155-0200` – Time when the GC event started
 2. `116.356` – Time when the GC event started, relative to the JVM startup time. Measured in seconds. In this case we can see the event started right after the previous Minor GC finished.
