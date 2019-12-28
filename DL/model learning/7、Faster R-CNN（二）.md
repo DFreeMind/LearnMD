@@ -19,6 +19,7 @@ caffe 模型结构的可视化使用了 [Netscope](http://ethereon.github.io/net
 - tools：训练和测试使用的工具
 
 文中结构图使用 models 中 PASCAL VOC 下的 VGG16 做成：
+
 ![img](https://wx1.sinaimg.cn/large/69d4185bly1fy1zg52b3wj20b70fbdgy.jpg)
 
 faster_rcnn_alt_opt 中的 alt_opt 值得就是 alternating optimization ，即交替优化，交替训练 RPN 和 fast rcnn，主要实现过程在 /tools/train_fast_rcnn_alt_opt.py 文件中。
@@ -28,10 +29,14 @@ end2end 就是端对端一次训练 RPN 和 fast rcnn。
 # Faster R-CNN 四步交替训练（alternating optimization）
 
 1. 训练 RPN，通过在 ImageNet 上预训练的 VGG16 来初始化 RPN 网络，对网络进行微调。通过训练，使得 RPN 可以产生好的 region proposal。最后把初步训练好的 RPN 网络模型保存供接下来训练 Fast R-CNN 使用。
+
 2. 使用 ImageNet 上预训练的 VGG16 来初始化 Fast R-CNN ，使用上一步训练好的 RPN 网络模型来生成 region proposal 作为输入数据。此时训练的模型还没有共享卷积层。
+
 3. 使用上一步训练的 fast r-cnn 来初始化 RPN 网络 ，再次训练 RPN 模型，这次有了共享的卷积层，并且这次只微调 RPN 模型特有的层。训练好之后将模型保存。
+
 4. 使用上一步训练的 RPN 来初始化 fast r-cnn 网络，并使用上一步保存的 RPN 模型来生成 region proposal 作为输入数据。保持共享的卷积层不变，微调 fast r-cnn 独有的层。这样两个网络就共享了卷积层，构成了一个统一的模型。
-![img](https://wx1.sinaimg.cn/large/69d4185bly1fy1zilwml0j20el09j0ti.jpg)
+
+  ![img](https://wx1.sinaimg.cn/large/69d4185bly1fy1zilwml0j20el09j0ti.jpg)
 
 训练过程的实现在 [train_faster_rcnn_alt_opt.py](https://github.com/rbgirshick/py-faster-rcnn/blob/781a917b378dbfdedb45b6a56189a31982da1b43/tools/train_faster_rcnn_alt_opt.py) 中。此四步训练划分为两个阶段，前两个步骤划分到第一阶段，后两个步骤划分到第二阶段。
 
@@ -40,6 +45,7 @@ end2end 就是端对端一次训练 RPN 和 fast rcnn。
 ### 第一步：训练 RPN
 
 训练 RPN 的结构图如下，由 [stage1_rpn_train.pt](https://github.com/rbgirshick/py-faster-rcnn/blob/781a917b378dbfdedb45b6a56189a31982da1b43/models/pascal_voc/VGG16/faster_rcnn_alt_opt/stage1_rpn_train.pt) 定义的结构绘制：
+
 ![img](https://ws2.sinaimg.cn/large/69d4185bly1fy1zke6j5rj20go0e33zr.jpg)
 
 此时训练使用的数据是有标签的，即 PASCAL VOC 提供的训练数据，通过 ROIDataLayer 来完成数据的提取。在训练时只需要图片数据 data、图片信息数据（宽高缩放） im_info、物体定位数据 gt_boxes，训练 RPN 模型用不到被检测物体的 labels 数据，因此 RoIDataLayer并没有输出 labels 数据。但是在训练 fast r-cnn 时是需要的。
@@ -80,6 +86,7 @@ layer {
 但并不是所有标记为正样本和负样本的 anchor 都会用于损失的计算，而是从中抽取 256 个样本，正负样本的比例是 1:1，即正负样本各 128 个。如果正样本的数量不够，就用负样本来补充。上面筛选的过程并不是把其他的都删除掉了，而是把需要的256个 anchor 筛选出来，其他的 anchor 都标记为 -1。这样 6000 个 anchor 仍在，只是大部分 anchor 都被标记为了 - 1，除了计算损失需要的这 256 个 anchor。
 
 通过 AnchorTargetLayer 处理之后就生成了 rpn_labels、rpn_bbox_targets、rpn_bbox_inside_weights、rpn_bbox_outside_weights 四个输出，接下来就是计算 RPN 的损失。损失函数如下：
+
 ![img](https://wx3.sinaimg.cn/large/69d4185bly1fy2lddttypj20fq051mxn.jpg)
 
 通过不停的迭代直到 RPN 网络收敛，这样就训练好了 RPN 模型。之后将训练好的模型保存供后来使用。
@@ -89,6 +96,7 @@ layer {
 ### 使用 RPN 生成 rois
 
 在训练 Fast R-CNN 之前，需要使用上面训练好的 RPN 网络来生成 rois。生成 rois 时的网络结构如下：
+
 ![img](https://ws1.sinaimg.cn/large/69d4185bly1fy2lj6ob23j20d70fvdgt.jpg)
 
 生成 rois 的结构也是测试 RPN 网络时的结构，使用的都是 rpn_test_prototxt 配置文件。与 RPN 训练是的结构有不少的区别，首先少了 AnchorTargetLayer，新增了 ProposalLayer，用来生成 rois 和 每个 rois 的得分。此时的输入是无监督的数据，输入data 只有图像数据，需要由 RPN 来生成相应的 rois。
@@ -116,6 +124,7 @@ layer {
 首先依然是使用 generate anchor 生成 9 中尺寸的 anchor，然后通过 im_info 中的信息，枚举出全部 21k 个 anchor 的信息。
 
 之后从 rpn_cls_prob_reshape 取出前景框的概率，这里需要说明下，在 rpn_cls_prob_reshape 中，前九个是背景框的概率，后九个才是前景的概率，因此需要取出后面九个的概率得分：
+
 ![img](https://ws2.sinaimg.cn/large/69d4185bly1fy2loxiz45j208n05p3yn.jpg)
 
 通过生成的 21k 个 anchor 与 rpn_bbox_pred 生成的 bbox_deltas $(\Delta x、\Delta y 、\Delta w、\Delta h)$数据，完成对 anchor 的转换，生成实际预测的 proposals。
@@ -131,6 +140,7 @@ layer {
 ### 第二步：训练 Fast R-CNN
 
 有了通过 RPN 生成的 rois 就可以训练 Fast R-CNN，使用 ImageNet 上预训练的模型 VGG16 来初始化 Fast R-CNN ，训练时的结构如下：
+
 ![img](https://wx4.sinaimg.cn/large/69d4185bly1fy2lvxcwhqj20go0bgab4.jpg)
 
 上图的 rois 就是 RPN 生成的 proposals 数据。训练 fast r-cnn 的 batch_size 大小为 128 ，设置的前景参数为 0.25 ，也就是如果使用一张图，那么每张图需要提供 32 个前景 roi。如果是两张图，那么每张图提供 16 个情景 roi。
@@ -142,6 +152,7 @@ layer {
 **测试Fast R-CNN**
 
 训练完成之后，就可以对 fast r-cnn 进行测试，测试的结构如下：
+
 ![img](https://ws3.sinaimg.cn/large/69d4185bly1fy2m7r5oo2j20d70ibt9w.jpg)
 
 左侧的 RPN 生成 rois 的过程与训练 Fast R-CNN 是使用 RPN 生成 rois 一致，可以参考上面的讲解。但在此的数据并不是有标签的数据，需要模型自己来做推断。至此第一阶段的训练就就完成了，接下来就是第二阶段的训练。
@@ -155,6 +166,7 @@ layer {
 # 融合训练
 
 论文中也提到了融合训练，此训练方式比四步交替训练快很多，但精度却没有损失。end2end 训练的结构图如下：
+
 ![img](https://wx4.sinaimg.cn/large/69d4185bly1fy2mc4lvk6j20go0h60ui.jpg)
 
 可以看到此方式融合了图4 RPN 训练 和图7 Fast R-CNN 训练，但 Fast R-CNN 的 input_data 换成了roi_data 由 ProposalTargetLayer 来完成对 rois、labels、bbox_targets、bbox_inside_weights、bbox_outside_weights 数据的生成。

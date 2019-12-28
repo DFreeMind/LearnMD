@@ -19,6 +19,7 @@ RCNN 论文地址为[《Rich feature hierarchies for accurate object detection a
 # R-CNN 介绍
 
 论文中作者使用的结构图
+
 ![img](https://ws3.sinaimg.cn/large/69d4185bly1fy1nult1vrj20i70670ug.jpg)
 
 R-CNN流程，主要由三部分组成，
@@ -39,10 +40,11 @@ R-CNN流程，主要由三部分组成，
 # 模型设计
 
 论文直接使用了 AlexNet 的模型
+
 ![img](https://wx2.sinaimg.cn/large/69d4185bly1fy1o4k0cxfj20go06374v.jpg)
 
-因此模型需要的输入图片大小为 227×227
-论文中通过验证也证实了，CNN 的结构对 R-CNN 影响很大 使用 VGG 要好于 AlexNet。测试结果如下图：
+因此模型需要的输入图片大小为 227×227。论文中通过验证也证实了，CNN 的结构对 R-CNN 影响很大 使用 VGG 要好于 AlexNet。测试结果如下图：
+
 ![img](https://wx1.sinaimg.cn/large/69d4185bly1fy1o5p4gvmj20go01xq3k.jpg)
 
 上图中的 T-Net（ TorontoNet） 指的是 AlexNet，而 O-Net（ OxfordNet） 指的是 VGG，可以看到使用 VGG 的结果会更好。
@@ -63,17 +65,21 @@ $$
 IoU 的计算可以参考[《VGG 论文阅读记录》](https://zhuanlan.zhihu.com/p/42233779)的 IoU 部分， 在这里我们我们可以设置 IoU 的阈值为 30%。
 
 然而 precision 与 recall 去衡量分类的好坏并不准确，这时候就需要使用 PR（precision-recall） 曲线，其中 Precision 作为 y 轴，Recall 作为纵轴。PR 曲线通常是一个之字形的曲线，在目标检测领域该如何绘制 PR 曲线呢？
+
 ![img](https://wx2.sinaimg.cn/large/69d4185bly1fy1o9xugnjj20go0crgmm.jpg)
 
 如上图，一共三张图片一共有 7 个 ground-truths ，用黑色矩形表示。一共产生了 11 个检测目标，用绿色与红色表示，编号从 A ~ K旁边的数字表示置信度，因为 IoU 设置的是 0.3 ，因此可以看到标注绿色的为 true positive，红色的则为 false positive。
 
 如果想要画出 Precision-Recall 曲线，就需要按照检测出的矩形框的置信度从高到低进行排序，然后计算累积的 TP 和 FP 数量并计算出 Precision 与 Recall（注意他的计算是 TP/all ground-truths）,如下表：（可参考[基础概念（2）：各类曲线](https://zhuanlan.zhihu.com/p/59411415)）
+
 ![img](https://wx2.sinaimg.cn/large/69d4185bly1fy1pa8d3b2j20gb05mq3p.jpg)
 
 然后把点按照（recall，precision）绘制到坐标图中：
+
 ![img](https://wx4.sinaimg.cn/large/69d4185bly1fy1phiarvpj209y0fewfr.jpg)
 
 绘制完成之后，接着绘制插值Precision 与 AUC（area under curve）：
+
 ![img](https://ws1.sinaimg.cn/large/69d4185bly1fy1phv7gq1j20g60c876b.jpg)
 
 计算上面右图的面就可以得到 AP：
@@ -120,8 +126,8 @@ BBR 在物体检测的作用主要是用来微调候选区域的边框的位置�
 Inspired by the bounding-box regression employed in DPM , we train a linear regression model to predict a new detection window given the pool5 features for a selective search region proposal.
 ```
 
-
 产生的边框通常使用一个四维向量表示(x, y , w, h)，x、y 的值是边框的中心点的坐标，w 表示边框的框，h 表示高。
+
 ![img](https://ws1.sinaimg.cn/large/69d4185bly1fy1pqetxykj20c5087mx7.jpg)
 
 如上图蓝色代表原始的候选区域，红色代表微调后的候选区，黑色代表目标 ground truth。如果有 N 个训练数据，我们就会得到 N 个训练对 $\{ (P^i, G^i)\}_{i=1,...,N}$ 。这里就是要找到 P 经过映射 f 的处理之后得到更接近 G 的回归边框 $\widehat{G}$ 。即：
@@ -210,6 +216,7 @@ $$
 在训练过程中，作者使用到了 hard negative mining（难分样本挖掘），然而什么是 难分样本挖掘呢？在网上搜了下资料，大部分引用的都是 reddit 上同一个人的回答，这里就结合资料整理一下。
 
 在进行目标检测的过程中会产生的候选区域，将与ground-truth box 的 IoU 大于 0.5（论文中设置的即使此值） 的当做正样本（positive sample），小于此值的当做负样本（negative sample）。然后把这些产生的样本送入分类器进行训练，这时就会产生一个问题，负样本的数量远远大于正样本的数量（毕竟图片中的物体数量是有限的），这样训练的过程中就会产生很多假正例（false positive），这样就变成了训练了一个判断假正例的分类器，这显然不是我们想要的，那该怎么办呢？我们可以把 false positive 中得分较高的样本，重新放入网络中训练，从而加强网络对于 false positive 的判断能力。
+
 ![img](https://ws4.sinaimg.cn/large/69d4185bly1fy1qe3zol2j207905bgm2.jpg)
 
 如下图：其中黑色的为 ground-truth box，蓝色的为 positive sample，红色和黄色为 false negative sample。可以看到红色是很容易被判断成背景的，即 true negative。而黄色部分就很容易被判断成 false positive，其中的小的黄色矩形被误判的概率更高。
@@ -235,6 +242,7 @@ hard negative mining的实现贯穿于网络的训练过程，简单来说有以
 ## 切除研究法(Ablation study)
 
 在论文 3.2节中作者使用了 ablation study 方法研究哪一层和使用什么方法对最后的结果起的作用最大。研究的结果如下图：
+
 ![img](https://wx2.sinaimg.cn/large/69d4185bly1fy1qkdgwvij20go04675s.jpg)
 
 那么就是 ablation study 究竟是什么？查了些资料，大部分都是互相引用，这里结合资料综述一下。
@@ -258,6 +266,7 @@ hard negative mining的实现贯穿于网络的训练过程，简单来说有以
 - 重复上面步骤，知道没有矩形可选为止，最终得到想要的矩形区域
 
 以下以人脸检测为例，如下图：
+
 ![img](https://wx2.sinaimg.cn/large/69d4185bly1fy1qsv2lq7j209805cmxq.jpg)
 
 在测试阶段SVM 产生的结果，图中有两个人，产生了 A~E 六个矩形区域和分值。那么按照 NMS 的算法首先对矩形区域按照分值进行排序，排序结果如下：
@@ -265,9 +274,11 @@ hard negative mining的实现贯穿于网络的训练过程，简单来说有以
 A[0.98]  >  D[0.86]  >  B[0.77]  >  E[0.69]  >  C[0.56]  >  F[0.48]
 ```
 从中出分值最大的，那么 A 就被选中，接下来就删除与 A 矩形的 IoU 大于某个阈值的矩形。从图中可以观察到 B、C 将被删除，A 被保留，如下图：
+
 ![img](https://wx1.sinaimg.cn/large/69d4185bly1fy1vypk6awj20go04c0tn.jpg)
 
 接下来继续 NMS 操作，从剩下来的 D、E、F 中选择分值最高的，那么 D 将被选中，与 D 的 IoU 大于阈值的矩形将被删除，E、F 被删除留下 D，如下图：
+
 ![img](https://ws2.sinaimg.cn/large/69d4185bly1fy1vzeqotpj20go04c0tl.jpg)
 
 从上图中可以看出已经得到了我们想要的结果，如果还有矩形框，那么就按照上面的步骤不断重复，直到没有可供选择的矩形框位置。
@@ -288,21 +299,26 @@ A[0.98]  >  D[0.86]  >  B[0.77]  >  E[0.69]  >  C[0.56]  >  F[0.48]
 
 其实就是指的在缩放的时候是否保存长宽比，如果保持原有的宽高比例，就是各向同性，这样图片保持了原有的宽高比不会出现扭曲；如何不保持宽高比就是各向异性，图片在缩放时会出现扭曲。
 比如，如果一个原始的图像尺寸为 1024×512，现在我想把 512 的边缩放为 256，如果是各项同性缩放，因为原始图像的比例是 2:1 ，那么缩放之后也应该保持 2:1 ，即长边应该变成 512。各向异性就是不保持原有的 2:1 ，缩放之后可能是 4:3 或者是 16:9 ，这样图片就会出现扭曲。
+
 ![img](https://ws4.sinaimg.cn/large/69d4185bly1fy1w4ry768j20go06e758.jpg)
 
 从上图可以看到使用各项异性处理，如果最初的候选区域不是正方形，那么使用各向异性直接缩放到模型要求的 227×227 ，因为物体的扭曲，会影响到最后的精度。
 在进行变形前需要做一次像素填充处理，即 padding，即扩展原有的候选区域，在这里需要注意一下和 CNN 卷积中的 padding 的区别。CNN 中的卷积 padding 是为了输入在卷积之后，输出大小与输入大小一样，且常用的 padding 方式是补零（zero-padding）：
+
 ![img](https://wx1.sinaimg.cn/large/69d4185bly1fy1w7alxbrj20bp05e74n.jpg)
 
 而论文中提到的 padding 是在原有候选区域之上，在把每个边界扩展16像素，如下图：
+
 ![img](https://wx1.sinaimg.cn/large/69d4185bly1fy1w83t4b6j20el08xjsm.jpg)
 
 左图的红色框是原始候选区域的大小，右图的红色实线是在原有的虚线大小之上扩展16像素之后的结果。将候选区域填补处理好之后就可以进行之后的处理。
 
 如果在 padding 的过程中越过了原图的边界，那么就用候选区域中像素的均值进行补充，如下图：
+
 ![img](https://wx1.sinaimg.cn/large/69d4185bly1fy1wamlxnzj20em066ab4.jpg)
 
 之后论文中，作者给出的处理方法，处理结果如下图：
+
 ![img](https://ws2.sinaimg.cn/large/69d4185bly1fy1wdsne5wj20f90h2q5j.jpg)
 
 A 列是原始的候选区域，相对于CNN模型需要的输入，A 的第一行比 CNN 需要的输入高很多，第二行则比 CNN 需要的输入尺寸小很多。D 列就是各向异性直接缩放（warp transformation）到模型需要的输入尺寸，造成了图片扭曲。B 、C 采用的都是各项同性缩放方法，但具体处理方法不同：

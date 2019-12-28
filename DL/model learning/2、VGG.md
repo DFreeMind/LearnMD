@@ -8,6 +8,7 @@ VGG 的论文地址为[《Very Deep Convolutional Networks for Large-Scale Visua
 # VGG 结构
 
 VGG 多种结构示意如下：
+
 ![img](https://ws3.sinaimg.cn/large/69d4185bly1fy1gmtdrnvj20gb0gj40s.jpg)
 
 上图列出了从较浅的 VGG11 到 VGG19 不同的结构，其中的 11 或者 19指的是具有权重参数的层，如卷积层（conv layers）和全连接层（FC），不包括池化层，Dropout 和激活函数层（ReLU）。
@@ -19,6 +20,7 @@ VGG 多种结构示意如下：
 最后一个是 softmax 用于分类。
 
 VGG16 的结构如下图：
+
 ![img](https://ws1.sinaimg.cn/large/69d4185bly1fy1gnxts4bj20kg072my5.jpg)
 
 不像 AlexNet 在第一层卷积使用的卷积核是 11×11+4， ZFNet 与 GooLeNet V1使用的是 7×7+2，VGG 模型从 A-E 都是通过 3×3 的卷积过滤器（ Convolution Filter）增加架构的深度，所有过滤器的 strip 为 1 。之所有使用 3 个 3×3 的卷积核的堆叠来获得 7 ×7 视野（可参考 [《CNN：接受视野（Receptive Field）》](https://zhuanlan.zhihu.com/p/41955458)），是因为这么做有以下好处：
@@ -71,6 +73,7 @@ VGG 训练之所以可以收敛的比 AlexNet 快，是因为：
 首先将图片同质化的缩放（ isotropically rescaled）为预定义的最小图片边长，记做 Q。Q 不一定要和训练时的尺寸 S 相等。
 
 作者将三个全连接层在此阶段，转成了1个7×7，和 2 个 1×1 的卷积层。。从图2 VGG16结构图中就可以看到，以第一个全连接层为例，要转卷积层，FC6的输入是 7×7×512，输出是4096（也可以看做 1×1×4096），那么就要对输入在尺寸上（宽高）降维（从7×7 降到 1×1）和深度（channel 或者 depth）升维（从512 升到4096）。把7×7降到1×1，使用大小为 7×7的卷积核就好了，卷积核个数设置为4096，即卷积核为7×7×4096（下图中的[7×7×512]×4096 表示有 4096 个 [7×7×512] 这样的卷积核，7×7×4096 是简写形式忽略了输入的深度），经过对输入卷积就得到了最终的 1×1×4096 大小的 feature map。经过转换的网络就没有了全连接层，这样网络就可以接受任意尺寸的输入，而不是像之前之能输入固定大小的输入。转化如下图：
+
 ![img](https://wx2.sinaimg.cn/large/69d4185bly1fy1h0qh3yjj20k00aadgu.jpg)
 
 # 分类试验
@@ -151,9 +154,11 @@ VGG 训练之所以可以收敛的比 AlexNet 快，是因为：
 ![img](https://wx1.sinaimg.cn/large/69d4185bly1fy1i05vz6oj20c8062jrg.jpg)
 
 而如果使用全局池化的话（4×4 + 1s，大小与 feature map 相同），一个feature map 只产生一个值，即输出为 1×1，如下图：
+
 ![img](https://wx3.sinaimg.cn/large/69d4185bly1fy1i1lhxkhj20c50610sr.jpg)
 
 如果前一层有多个feature map 的话，只需要把经过全局池化的结果堆叠起来即可，如下图：
+
 ![img](https://wx3.sinaimg.cn/large/69d4185bly1fy1i2civ4tj20gc07owfe.jpg)
 
 上图，如果使用 Average 池化方法，那么就成为 Global Average Pooling，即 GAP。从而可以总结出，如果输入 feature map 为 W×H×C，那么经过全局池化之后的输出就为 1×1×C。
@@ -202,6 +207,7 @@ $$
 ![img](https://ws4.sinaimg.cn/large/69d4185bly1fy1i93lrffj20i60cemy0.jpg)
 
 或者写成如下的公式：
+
 ![img](https://wx1.sinaimg.cn/large/69d4185bly1fy1icr6dr2j208s057745.jpg)
 
 可以看到 IoU 的值越大，表明模型的准确度越好，IoU = 1 的时候 DR 与 GT 重合。

@@ -38,11 +38,13 @@ R-CNN 之所以这么慢，是因为他要对每一个候选区（object proposa
 ![img](https://wx4.sinaimg.cn/large/69d4185bly1fy1wvapdmgj20gd05t0tc.jpg)
 
 - 其次，最后一个全连接层和 softmax 被替换成两个前文描述的子层:
-![img](https://ws2.sinaimg.cn/large/69d4185bly1fy1wwh0owhj20bq0b4754.jpg)
+
+  ![img](https://ws2.sinaimg.cn/large/69d4185bly1fy1wwh0owhj20bq0b4754.jpg)
 
 - 最后，网络被修改成接收两类数据：一组图片和这些图片的一组 RoIs
 
 代价函数的构成如下图:
+
 ![img](https://ws1.sinaimg.cn/large/69d4185bly1fy1wx6skrrj20go06l0t4.jpg)
 
 # 操作
@@ -54,9 +56,11 @@ R-CNN 之所以这么慢，是因为他要对每一个候选区（object proposa
 RoI 的具体操作如下，使用 h×w 大小的 RoI窗口划分成 H×W 的子窗口，每个子窗口的大小近似为 h/H × w/W ，然后在每个子区域上使用最大池化操作，得到大小为 H×W 的输出。池化的操作是在每个特征映射channel 独立操作，池化是标准的最大池化操作。
 
 如一张320×320的图片，经过 VGG16 特征提取，累积的 stride 的为32（经过了5个池化层，每个池化层的 stride 为2），最终的输出为 10×10 大小的特征映射。其中的一个 RoI 在原图大小为 224×224 那么在最终的输出就为 7×7，在 10×10 中坐标为（1，2，7，7）如下图：
+
 ![img](https://wx1.sinaimg.cn/large/69d4185bly1fy1x94zp6fj20g4088wg2.jpg)
 
  因为最终输出的 feature map 的大小为 2×2（H×W），原 h、w 的大小为 7×7，因此每个子窗格的大小为 7/2×7/2 ，可以看到没有得到整数，因此这里就有了两种划分方式一种是舍去小数部分，即每个子窗口的大小为3×3，不舍的则是编程划分成3和4两种长度，然后在每个子窗口中进行 max pooling 操作，如下图：
+
 ![img](https://ws2.sinaimg.cn/large/69d4185bly1fy1xa42qbvj20go0arac8.jpg)
 
 有舍的操作会有问题，可以通过 RoI align 解决，过程可查看参考资料。
