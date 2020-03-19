@@ -19,7 +19,7 @@ The tools or JVM options listed below cannot be used universally regardless of t
 
 First, the GC monitoring methods can be separated into **CUI** and **GUI** depending on the access interface. The typical CUI GC monitoring method involves using a separate CUI application called "**jstat**", or selecting a JVM option called "**verbosegc**" when running JVM.
 
-GUI GC monitoring is done by using a separate GUI application, and three most commonly used applications would be "jconsole", "jvisualvm" and "Visual GC".
+GUI GC monitoring is done by using a separate GUI application, and three most commonly used applications would be "**jconsole**", "**jvisualvm**" and "**Visual GC**".
 
 Let's learn more about each method.
 
@@ -29,7 +29,7 @@ Let's learn more about each method.
 
 **jstat** does not provide only the GC operation information display. It also provides class loader operation information or Just-in-Time compiler operation information. Among all the information jstat can provide, in this article we will only cover its functionality to *monitor* GC operating information.
 
-**jstat** is located in $JDK_HOME/bin, so if *java* or *javac* can run without setting a separate directory from the command line, so can jstat.
+**jstat** is located in `$JDK_HOME/bin`, so if *java* or *javac* can run without setting a separate directory from the command line, so can jstat.
 
 You can try running the following in the command line.
 
@@ -93,7 +93,7 @@ Different jstat options show different types of columns, which are listed below.
 | FGCT   | The accumulated time for full GC operations                  | -gc -gcold -gcoldcapacity -gcpermcapacity -gcutil -gccause   |
 | GCT    | The total accumulated time for GC operations                 | -gc -gcold -gcoldcapacity -gcpermcapacity -gcutil -gccause   |
 | NGCMN  | The minimum size of new area in KB                           | -gccapacity -gcnewcapacity                                   |
-| NGCMX  | The maximum size of max area in KB                           | -gccapacity -gcnewcapacity                                   |
+| NGCMX  | The maximum size of new area in KB                           | -gccapacity -gcnewcapacity                                   |
 | NGC    | The current size of new area in KB                           | -gccapacity -gcnewcapacity                                   |
 | OGCMN  | The minimum size of old area in KB                           | -gccapacity -gcoldcapacity                                   |
 | OGCMX  | The maximum size of old area in KB                           | -gccapacity -gcoldcapacity                                   |
@@ -128,7 +128,7 @@ But the arithmetical average often does not help analyzing the actual GC problem
 |                    | jstat                                                        | -verbosegc                                                   |
 | ------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | Monitoring Target  | Java application running on a machine that can log in to a terminal, or a remote Java application that can connect to the network by using jstatd | Only when -verbogc was specified as a JVM starting option    |
-| Output information | Heap status (usage, maximum size, number of times for GC/time, etc.) | Size of ew and old area before/after GC, and GC operation time |
+| Output information | Heap status (usage, maximum size, number of times for GC/time, etc.) | Size of new and old area before/after GC, and GC operation time |
 | Output Time        | Every designated time                                        | Whenever GC occurs                                           |
 | Whenever useful    | When trying to observe the changes of the size of heap area  | When trying to see the effect of a single GC                 |
 
@@ -217,3 +217,4 @@ You can open the redirected file with HPJMeter, which allows faster and easier G
 ## What is the Next Article About?
 
 In this article I focused on *how to monitor GC operation information*, as the preparation stage for GC tuning. From my personal experience, I suggest using **jstat** to monitor GC operation, and if you feel that it takes too lmuch time to execute GC, then try **-verbosegc** option to analyze GC. The general GC tuning process is *to analyze the results after applying the changed GC options* after the **-verbosegc** option has been applied based on the analysis. In the next article, we will see the best options for executing GC tuning by using real cases as our examples.
+

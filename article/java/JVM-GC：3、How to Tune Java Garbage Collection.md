@@ -8,13 +8,9 @@ In this third article based on real cases as our examples **I will show some of 
 
 Or more precisely **is GC tuning required for Java-based services**? I should say GC tuning is *not* always required for all Java-based services. This means a Java-based system in operation has the following options and actions:
 
- 
-
 - The memory size has been specified using `-Xms` and `–Xmx` options.
 - The `-server` option is included.
 - Logs such as *Timeout log* are not left in the system.
-
- 
 
 **In other words, if you have not set the memory size and too many Timeout logs are printed, you need to perform GC tuning on your system.**
 
@@ -24,18 +20,12 @@ Think about the fundamental cause of GC tuning. The Garbage Collector clears an 
 
 There is a saying, "many a little makes a mickle." We need to take care of small things, or they will add up and become something big which is difficult to manage.
 
- 
-
 - We need to use and make `StringBuilder` or `StringBuffer` a way of life instead of `String`.
 - And it is better to accumulate as few logs as possible.
-
- 
 
 However, we know that there are some cases we cannot help. We have seen that XML and JSON parsing use the most memory. Even though we use `String` as little as possible and process logs as well as we can, a huge temporary memory is used for parsing XML or JSON, some 10-100 MB. However, it is difficult not to use XML and JSON. Just understand that it takes too much memory.
 
 If application memory usage improves after repeated tunings, you can start GC tuning. I classify the purposes of GC tuning into two.
-
- 
 
 1. One is to **minimize the number of objects passed to the old area**;
 2. and the other is to **decrease Full GC execution time**.
@@ -50,14 +40,12 @@ Generational GC is the GC provided by Oracle JVM, excluding the G1 GC which can 
 
 The execution time of Full GC is relatively longer than that of Minor GC. Therefore, if it takes too much time to execute Full GC (1 second or more), timeout may occur in several connected parts.
 
- 
-
 - If you try to decrease the Old area size to decrease Full GC execution time, `OutOfMemoryError` may occur or the number of Full GCs may increase.
 - Alternatively, if you try to decrease the number of Full GC by increasing the Old area size, the execution time will be increased.
 
- 
-
 Therefore, you need to **set the Old area size to a "proper" value**.
+
+
 
 ## Options Affecting the GC Performance
 
@@ -70,8 +58,6 @@ Java GC options are the same. Setting several options does not enhance the speed
 The following table shows options related to memory size among the GC options that can affect performance.
 
 **Table 1: JVM Options to Be Checked for GC Tuning.**
-
- 
 
 | Classification | Option              | Description                          |
 | -------------- | ------------------- | ------------------------------------ |
@@ -117,13 +103,8 @@ But, if you have allocated about 10GB Java memory and it is impossible to decrea
 
 > **Note:**
 >
->  
+>  Heap dump is a file of the memory that is used to check the objects and data in the Java memory. This file can be created by using the **jmap** command included in the JDK. While creating the file, the Java process stops. Therefore, do not create this file while the system is operating.
 >
-> Heap dump is a file of the memory that is used to check the objects and data in the Java memory. This file can be created by using the **jmap** command included in the JDK. While creating the file, the Java process stops. Therefore, do not create this file while the system is operating.
->
->  
->
-> Search on the Internet the detailed description on heap dump. For Korean readers, see my book I published last year: [The story of troubleshooting for Java developers and system operators](http://book.naver.com/bookdb/book_detail.nhn?bid=6654751) (Sangmin Lee, Hanbit Media, 2011, 416 pages).
 
 ### 3. Setting GC type/memory size
 
@@ -145,15 +126,12 @@ The best way to check the GC status of the Web Application Server (WAS) in opera
 
 The following example shows a JVM for which GC tuning has not been done (however, it is not the operation server).
 
- 
-
+```bash
+$ jstat -gcutil 21719 1s
+S0     S1    E     O     P    YGC   YGCT   FGC  FGCT   GCT
+48.66 0.00 48.10 49.70 77.45  3428 172.623  3  59.050 231.673
+48.66 0.00 48.10 49.70 77.45  3428 172.623  3  59.050 231.673
 ```
-`$ jstat -gcutil 21719 1s``S0  S1  E  O  P  YGC  YGCT  FGC  FGCT GCT``48.66 0.00 48.10 49.70 77.45 3428 172.623 3 59.050 231.673``48.66 0.00 48.10 49.70 77.45 3428 172.623 3 59.050 231.673`
-```
-
- 
-
- 
 
 Here, check the values of YGC and YGCT. Divide YGCT by YGC. Then you get 0.050 seconds (50 ms). It means that it takes average 50 ms to execute GC in the Young area. With that result, you don't need to care about GC for the Young area.
 
@@ -163,14 +141,10 @@ You can easily check GC status by using the **jstat** command; however, the best
 
 If the GC execution time meets all of the following conditions, GC tuning is not required.
 
- 
-
 - Minor GC is processed quickly (within 50 ms).
 - Minor GC is not frequently executed (about 10 seconds).
 - Full GC is processed quickly (within 1 second).
 - Full GC is not frequently executed (once per 10 minutes).
-
- 
 
 The values in parentheses are not the absolute values; they vary according to the service status. Some services may be satisfied with 0.9 seconds of Full GC processing speed, but some may not. Therefore, check the values and decide whether to execute GC tuning or not by considering each service.
 
@@ -202,16 +176,12 @@ Each system requires its proper GC type, so you need to find the best GC type fo
 
 The following shows the relationship between the memory size, the number of GC execution, and the GC execution time.
 
- 
-
 - Large memory size
   - decreases the number of GC executions.
   - increases the GC execution time.
 - Small memory size
   - decreases the GC execution time.
   - increases the number of GC executions.
-
- 
 
 There is no "right" answer to set the memory size to small or large. 10 GB is OK if the server resource is good and Full GC can be completed within 1 second even when the memory has been set to 10 GB. But most servers are not in the status. When the memory is set to 10 GB, it takes about 10 ~ 30 seconds to execute Full GC. Of course, the time may vary according the object size.
 
