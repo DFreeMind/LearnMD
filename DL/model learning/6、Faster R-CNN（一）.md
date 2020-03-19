@@ -14,6 +14,7 @@ Faster R-CNN 论文地址[《Faster R-CNN: Towards Real-Time Object Detection wi
 - [cnblogs - Faster R-CNN论文详解](http://link.zhihu.com/?target=https%3A//www.cnblogs.com/xuanyuyt/p/6209910.html)
 
 图像金字塔、过滤器（filter）金字塔、锚点（anchor boxes）比较
+
 ![img](https://ws3.sinaimg.cn/large/69d4185bly1fy1xp1rhcqj20go03bdg6.jpg)
 
 (a) Pyramids of images and feature maps are built, and the classifier is run at all scales.   
@@ -37,9 +38,11 @@ Faster R-CNN 的主要过程如下：
 ```
 
 对于结构的一下理解，在网上可以搜到下面一张结构图：
+
 ![img](https://wx2.sinaimg.cn/large/69d4185bly1fy1xs1pr21j20go0eygnj.jpg)
 
 我觉着这张图应该是有些问题的，上面的“object or not object” 和 “BB proposal” 应该是在 Region Proposal Network 中完成的，而不是又在输出的 proposals 进行这些操作，RPN 的输出结果就是 proposals。下面这张图更应该能反应真实的情况：
+
 ![img](https://wx1.sinaimg.cn/large/69d4185bly1fy1xt7ikyrj20go0imaba.jpg)
 
 RPN 输入任意尺寸的图片，返回一组带有objectness score 的矩形候选区。objectness score 用来衡量物体类别（object classes）与背景（background）之间的关系。此过程可以通过 FCN 来模拟。
@@ -47,6 +50,7 @@ RPN 输入任意尺寸的图片，返回一组带有objectness score 的矩形�
 网络的目标是为了让 RPN 与 Fast R-CNN 可以共享计算，这里就假设两个网络共享了通用的卷积层。在论文的实验中，作者研究了 ZFNet 和 VGG-16，前者有5个可共享的卷积层，后者含有13个可共享的卷积层。VGG-16有13个可共享的卷积层，VGG-16一共有16个含参卷积层，去掉最后的3个 FC 还剩 13 个卷积层。
 
 Faster R-CNN 更细节的结构图：
+
 ![img](https://wx4.sinaimg.cn/large/69d4185bly1fy1xvied6lj20go09vdgr.jpg)
 
 # RPN 结构
@@ -79,6 +83,7 @@ rpn_loss_bbox: SmoothL1
 k 个建议是通过相对于 k 个推断 box 来参数化，其中的推断 box 就被称为 anchor。anchor 是滑动窗口的中心，他与尺度（scale）和长宽比（aspect ratio）相关联。 默认情况下使用 3 个 scale 和 3 个长宽比，因此会产生 9 个 anchor 在每个滑动位置。对于一个 W×H 大小的卷积特征映射，会产生 W×H×K 个 anchor。之所以得到 W×H×K 个 anchor ，是因为 3×3 的卷积网络在 W×H 上滑动是进行了 padding，且值为 1 ，stride 为 1 。那么就会产生  W×H 此滑动，每次滑动有 K 个 anchor，那么最终就产生了 W×H×K 个 anchor 。
 
 RPN 中 Anchor 产生的示意图如下：
+
 ![img](https://ws1.sinaimg.cn/large/69d4185bly1fy1y48ixhnj20dz08l0tk.jpg)
 
 ![img](https://wx2.sinaimg.cn/large/69d4185bly1fy1y4ja5ubj20ax08bwg2.jpg)
@@ -89,7 +94,9 @@ anchor 的优点: 它只依赖与单个 scale 的 images 和 feature map 不过�
 
 Faster R-CNN 的训练分为四步，不断循环四步训练网络，过程如下图：
 
-![img](https://pic2.zhimg.com/80/v2-a3f41db487a68e44cebeafc0230d4981_hd.jpg)参考《知乎 - 一文读懂Faster RCNN》重新绘制
+![img](https://pic2.zhimg.com/80/v2-a3f41db487a68e44cebeafc0230d4981_hd.jpg)
+
+参考《知乎 - 一文读懂Faster RCNN》重新绘制
 
 训练涉及到的细节比价多，这里不详细的讲解，在[《Faster R-CNN 论文阅读记录（二）：细节》](https://zhuanlan.zhihu.com/p/44612080)一文中会有更多的交待。
 
@@ -98,9 +105,11 @@ Faster R-CNN 的训练分为四步，不断循环四步训练网络，过程如�
 使用 RPN 生成的 proposals ，彼此之间有很多的重叠。为了减少冗余，就需要依赖 cls 得到的分值使用 NMS（non-maximum suppression） 进行削减。 最终留下 2000 个 proposals。使用 NMS 之后，使用 top-N 排序候选区域进行检测。
 
 **不同的 proposal 产生方法对比图**
+
 ![img](https://ws4.sinaimg.cn/large/69d4185bly1fy1z40yd04j20ft0960um.jpg)
 
 可以看到使用 RPN 的 Fast R-CNN 的 mAP 达到了 59.9%，而且只用了 300 个 proposals，且速度还比 SS（ Selective Search） 和 EB （ EdgeBoxes）的方法快很多。如下图：
+
 ![img](https://ws3.sinaimg.cn/large/69d4185bly1fy1z4r0rbsj20gi0200t2.jpg)
 
 在 ablation 测试中，RPN + ZF 100 与 RPN + ZF（no NMS）有相似的 mAP，可以看出 NMS 对检测 mAP 并没有损害，可能减少了 false alarms 的数量。
@@ -112,11 +121,13 @@ Faster R-CNN 的训练分为四步，不断循环四步训练网络，过程如�
 **使用 VGG16 结构**
 
 使用 RPN 与 VGG16结合的结果如下图：
+
 ![img](https://ws2.sinaimg.cn/large/69d4185bly1fy1z6vpvsnj20go04baao.jpg)
 
 **超参的敏感性**
 
 论文中研究了 anchor 不同的设置，如下图：
+
 ![img](https://ws3.sinaimg.cn/large/69d4185bly1fy1z7h6n6qj20dk04jaav.jpg)
 
 可以看到 3 scales 1 ratio 和 3scales 3 ratios 的检测精度非常接近，这就说明 scale 和 ratio 并不是不可分开的维度对于检测精度来说。
@@ -130,9 +141,11 @@ L(\{ p_i \},\{ t_i \}) = \frac{1}{N_{cls}} \sum L_{cls}(p_i,p^*_i) + \lambda \fr
 }
 $$
 ![img](https://wx4.sinaimg.cn/large/69d4185bly1fy1z8l4ze2j20bh01ca9z.jpg)
+
 可以看到为 10 的时候 mAP 的分值最高。也表明结果对 λ 在大范围内变化并不敏感。
 
 **Recall 与 IoU**
+
 ![img](https://ws4.sinaimg.cn/large/69d4185bly1fy1z9nrkyfj20go04u752.jpg)
 
 可以看到 RPN 的 proposal 从 2000 降到 300 行为是非常的优雅的，几乎没有怎么改变。这也表明了 cls 在其中起到了很大的作用。SS 和 EB 随着 proposal 的减少，下降速度非常的快。
@@ -140,6 +153,7 @@ $$
 **One-Stage Detection vs. Two-Stage Proposal + Detection**
 
 OverFeat 是 one-stage, class-specific 检测的 pipeline，而 Faster R-CNN 是 two-stage cascade consisting of class-agnostic proposals and class-specific  detections。
+
 ![img](https://wx1.sinaimg.cn/large/69d4185bly1fy1zajluykj20gm01z74r.jpg)
 
 # 问题
@@ -159,6 +173,7 @@ RPN 选择了3×3 的滑动窗口来做卷积，那么为什么是 3×3 而不�
 ## 接收视野为什么是 228 像素？
 
 在论文的 3.1 章节提到，在最终的共享卷积层输出的特征映射上，使用小的 n×n 滑动网络来生成区域建议。每个滑动窗口被映射到低维的特征，其中 VGG16 是 512 维，这里的 512 维应该指的是VGG16 最终输出的 512 个 filter。如下图：
+
 ![img](https://ws3.sinaimg.cn/large/69d4185bly1fy1y9ly1szj20g505odgf.jpg)
 
 当使用的 n=3 的滑动网络时，VGG16  在原始的大图上的接收视野为 228像素，那这个尺寸是如何算出来的呢？这里可以参考 CNN：接受视野（Receptive Field）这篇文章的计算公式
@@ -194,6 +209,7 @@ Changing stride length decreased object detection accuracy #294
 但通过 fast  r-cnn 论文的描述，和[《leanote - 详解 ROI Align 的基本原理和实现细节》](http://blog.leanote.com/post/afanti.deng%40gmail.com/b5f4f526490b)此文的描述，我更倾向于 16 是一个累积步长。以figure1  VGG16 为例，卷积层并没有改变输入的尺寸，只有经过池化层时才会让输入的尺寸减半，而 Faster R-CNN 恰好要经过 4 个池化层，因此累积的结果就是 2×2×2×2 = 16。
 
 对于 ZFNet，只有步长为 2 的前四层会让尺寸减半，因此总的 stride 也是 16：
+
 ![img](https://ws3.sinaimg.cn/large/69d4185bly1fy1yk56gb8j20go07ljrr.jpg)
 
 在 PASCAL 上为缩放的图片最小边为 375 ，通过扩大 1.6 倍达到 600，那么相应的将 原始的 16 缩小 1.6 倍就是 10 像素。
@@ -209,9 +225,11 @@ Changing stride length decreased object detection accuracy #294
 **尺寸问题**
 
 在 3.3 节的实现细节中，提到了生成 Anchor 的方法，采用三种尺寸 $128^2、256^2、512^2$ ，三种比例 1:2、1:1、2:1 ，如下图所示：
+
 ![img](https://wx1.sinaimg.cn/large/69d4185bly1fy1ylp2yqpj20ff0buadh.jpg)
 
 黄色的点即为中心点。或者是下图形式：
+
 ![img](https://ws1.sinaimg.cn/large/69d4185bly1fy1ym5vsocj20go0akt9i.jpg)
 
 **anchor 的数量问题**
@@ -220,16 +238,19 @@ Changing stride length decreased object detection accuracy #294
 首先需要算出来经过 ZFNet 或者 VGG16 之后，在最后一层得到的特征图的大小，因为总的 stride 为16，因此最终得到的特征图的大小为：Ceil（1000/16）× Ceil（600/16）≈ 63 × 38。这样经过 3×3 的网络之后就得到 63 × 38 × 9 = 21546 个 anchor，大约就是 20k。
 
 但并不是产生的 anchor 都会给使用，这里需要处理掉跨越边界的 anchor box，如果在训练的时候不处理掉，会让训练难以收敛。
+
 ![img](https://wx4.sinaimg.cn/large/69d4185bly1fy1yo9h190j20go0duju9.jpg)
 
 如上图，蓝色较大部分跨越了边界，绿色有少部分跨越，红色则没有跨越。但是，在测试阶段会保留所有的 proposal boxes ，但是会把跨越边界的部分裁剪掉。
 
 从网上搜索资料的过程中，发现很多提到最终生成尺寸大小为 51×39×512（VGG16） 或者 51×39×512 （ZFNet），如下面的一张示意图：
+
 ![img](https://wx3.sinaimg.cn/large/69d4185bly1fy1yple560j20go05rt97.jpg)
 
 而且可以看到在很多的文章中都引用了这张图，但这里我就有点疑问，输入的是 1×3×224×224 得到的 raw feature 大小为什么是 51×39，得到的不应该是 (224/16)×(224/16) = 14×14？
 
 其实这里隐含了一个信息，就是在输入到网络中的图片都需要进行缩放，重新缩放后的大小为 800 × 600。但这么计算下来的尺寸也应该是  (800/16)×(600/16) ≈ 50×38，为什么他们计算的就比这个多了一个像素呢，这里还真是没有搞明白，但我还是觉着应该是 50×38 。从下面的图中也可以印证自己的想法：
+
 ![img](https://wx2.sinaimg.cn/large/69d4185bly1fy1yr5keyjj20go0aljt9.jpg)
 
 
