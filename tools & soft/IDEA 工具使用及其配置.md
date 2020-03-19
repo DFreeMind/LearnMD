@@ -8,7 +8,7 @@
 
 `Prefernces --> Editor --> Inspections --> SQL --> No data sources configure` 取消检查
 
-![image](https://wx3.sinaimg.cn/large/69d4185bly1g4gtwmhsk8j20xv0jyju3.jpg)
+![image](assets/69d4185bly1g4gtwmhsk8j20xv0jyju3.jpg)
 
 
 
@@ -16,13 +16,13 @@
 
 `Prefernces --> Editor --> Inspections --> SQL -->  SQL dialect detection` 取消检查
 
-![image](https://wx2.sinaimg.cn/large/69d4185bly1g4gtybkdtyj20xg0jl76y.jpg)
+![image](assets/69d4185bly1g4gtybkdtyj20xg0jl76y.jpg)
 
 3、去掉 "注入语言"背景色
 
 `Prefernces --> Editor --> Colors Scheme --> General --> Code --> Injected language fragment --> Background`
 
-![image](https://wx1.sinaimg.cn/large/69d4185bly1g4gu2fnqb2j20xg0jlmzd.jpg)
+![image](assets/69d4185bly1g4gu2fnqb2j20xg0jlmzd.jpg)
 
 
 
@@ -34,7 +34,7 @@ IDEA中默认情况下会把 style 中的值以省略的形式展示，可以通
 
 通过以下设置就可以将其展开：
 
-![image](https://wx4.sinaimg.cn/large/69d4185bly1g4kaubv6ikj20xv0jy40p.jpg)
+![image](assets/69d4185bly1g4kaubv6ikj20xv0jy40p.jpg)
 
 
 
@@ -42,19 +42,17 @@ IDEA中默认情况下会把 style 中的值以省略的形式展示，可以通
 
 去除拼写检查：`Editor --> Inspections --> Spelling --> Typo` 去掉勾选即可
 
-![image](https://ws2.sinaimg.cn/large/69d4185bgy1g4kbwig1u3j20xi0jpmzs.jpg)
-
-
+![img](assets/69d4185bgy1g4kbwig1u3j20xi0jpmzs.jpg)
 
 ## 文件编码
 
 [解决IntelliJ IDEA控制台输出中文乱码问题](https://blog.csdn.net/liu865033503/article/details/81094575)
 
-![image](https://ws2.sinaimg.cn/large/69d4185bgy1g4lhd1pig7j20xh0jrwgb.jpg)
+![image](https://ws4.sinaimg.cn/large/69d4185bgy1g4lhd1pig7j20xh0jrwgb.jpg)
 
 如何控制台还是乱码，可以在 Tomcat 的选项中添加 VM 选项：`-Dfile.encoding=UTF-8`
 
-![image](https://wx2.sinaimg.cn/large/69d4185bgy1g4li2kp3ojj20p10aujs9.jpg)
+![image](assets/69d4185bgy1g4li2kp3ojj20p10aujs9.jpg)
 
 这样基本就可以解决控制台乱码问题。
 
@@ -64,7 +62,7 @@ IDEA中默认情况下会把 style 中的值以省略的形式展示，可以通
 
 IDEA 会检测项目中是否有重复代码，通过设置可以将此提示去掉：`Setting --> Inspections --> General --> Duplicated Code fragment ` 去掉勾选即可。
 
-![image](https://wx2.sinaimg.cn/large/69d4185bgy1g4liiobz7fj20xi0jr417.jpg)
+![image](assets/69d4185bgy1g4liiobz7fj20xi0jr417.jpg)
 
 
 
@@ -72,7 +70,7 @@ IDEA 会检测项目中是否有重复代码，通过设置可以将此提示去
 
 `Settings -> Editor -> Inspections -> JavaScript -> Probable bugs -> Equality operator may cause type coercion`
 
-![image](https://wx3.sinaimg.cn/large/69d4185bgy1g4sf7mrwbgj20xi0js0vy.jpg)
+![image](assets/69d4185bgy1g4sf7mrwbgj20xi0js0vy.jpg)
 
 
 
@@ -80,13 +78,13 @@ IDEA 会检测项目中是否有重复代码，通过设置可以将此提示去
 
 `Settings -> Editor -> Inspections -> JavaScript -> General ->jQuery usage efficiency`
 
-![image](https://ws2.sinaimg.cn/large/69d4185bgy1g4tmnyjykjj20xh0js41e.jpg)
+![img](assets/69d4185bgy1g4tmnyjykjj20xh0js41e.jpg)
 
 ## 去除未识别HTML标签提示
 
 `Settings -> Editor -> Inspections -> HTML`
 
-![image](https://wx4.sinaimg.cn/large/69d4185bgy1g4tqiksz54j20xi0js77a.jpg)
+![image](assets/69d4185bgy1g4tqiksz54j20xi0js77a.jpg)
 
 
 
@@ -114,9 +112,7 @@ IDEA Even Log面板无法正常显示日志的问题，有可能是日志所在�
 
 在开发 Web 项目时浏览器会缓存JSP/HTML/JS/CSS等文件，可以通过 IDEA 的 `Invalidate Caches/Restart` 来禁用缓存。
 
-![image](https://ws1.sinaimg.cn/large/69d4185bgy1g4kc3cdiocj20960gyaal.jpg)
-
-
+![img](assets/69d4185bgy1g4kc3cdiocj20960gyaal.jpg)
 
 ## 项目修改热部署
 
@@ -124,13 +120,11 @@ IDEA Even Log面板无法正常显示日志的问题，有可能是日志所在�
 
 首先打开 Tomcat 的配置，在部署时选择以 `exploded` 结尾的部署项目，而不是以 `war` 结尾的：
 
-![image](https://ws2.sinaimg.cn/large/69d4185bgy1g4mfciddfoj20db04fglm.jpg)
+![img](assets/69d4185bgy1g4mfciddfoj20db04fglm.jpg)
 
 之后回到 `server` 选项，在 `On 'Update' action` 以及 `On frame deactivation` 的选项中均选择 `Update classes and resources` 选项即可：
 
-![image](https://ws4.sinaimg.cn/large/69d4185bly1g4mfi95t4hj20p40e275c.jpg)
-
-
+![img](assets/69d4185bgy1g4mfezrbncj20p50d9my7.jpg)
 
 
 
