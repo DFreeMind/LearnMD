@@ -374,7 +374,7 @@ python -m digits.download_data mnist ~/mnist
 
 `labels.txt` 里面不一定要含有内容 ，可以只是一个空文件，谁给你传完成就可以在列表中看到
 
-![image](https://ws2.sinaimg.cn/large/69d4185bgy1g45fegzsdej20x90cowfp.jpg)
+![image](https://ws4.sinaimg.cn/large/69d4185bgy1g45fegzsdej20x90cowfp.jpg)
 
 
 
