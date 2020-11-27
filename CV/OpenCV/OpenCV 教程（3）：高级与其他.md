@@ -387,15 +387,23 @@ show_img([multi_copy],1,1,figsize=(16,16))
 
 ![img](assets/69d4185bly1fs5bwifzs6j20bw07sq2z.jpg)
 
-数学中，我们用 $\frac{x^2}{a^2}+\frac{y^2}{b^2}=1$ 表示，其实我们可以写成矩阵的形式：$\left[  \begin{matrix}    x & y   \end{matrix}   \right]\left[  \begin{matrix}    \frac{1}{a^2} & 0  \newline    0 & \frac{1}{b^2}   \end{matrix}   \right]\left[  \begin{matrix}    x  \newline    y   \end{matrix}   \right]=1$
-
+数学中，我们用 $\frac{x^2}{a^2}+\frac{y^2}{b^2}=1$ 表示，其实我们可以写成矩阵的形式：
+$$
+\left[  \begin{matrix}    x & y   \end{matrix}   \right]\left[  \begin{matrix}    \frac{1}{a^2} & 0  \newline    0 & \frac{1}{b^2}   \end{matrix}   \right]\left[  \begin{matrix}    x  \newline    y   \end{matrix}   \right]=1
+$$
 把中间的矩阵当作M，这样我们就可以得到一个椭圆半轴与特征值的关系：显然，特征值λ越大，半轴a或b越短。
 
 另外，我们还要用到泰勒展开，
 
-一阶泰勒展开：$f(x+\Delta x) = f(x)+f\prime(x)\Delta x+\cdots+\frac{f\prime^n(x)}{n!}\Delta x+R_n(x)$ 
+一阶泰勒展开：
+$$
+f(x+\Delta x) = f(x)+f\prime(x)\Delta x+\cdots+\frac{f\prime^n(x)}{n!}\Delta x+R_n(x)
+$$
+二阶泰勒展开：
+$$
+f(x+\Delta x,y+\Delta y)=f(x,y)+f_x(x,y)\Delta x+f_y(x,y)\Delta y+\cdots+R_n(x,y)
+$$
 
-二阶泰勒展开：$f(x+\Delta x,y+\Delta y)=f(x,y)+f_x(x,y)\Delta x+f_y(x,y)\Delta y+\cdots+R_n(x,y)$
 
 ### 数学推到
 Harris角点检测简单来说就是先选取一个矩形块，移动这个矩形块，然后计算像素间的差值。这个矩形块称为窗口，一般矩形块内的像素点权重不同，比如中间的像素点权重明显大于周边像素。综上，Harris算法模型可以用如下公式表示：

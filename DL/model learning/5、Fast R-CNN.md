@@ -25,7 +25,7 @@ R-CNN 之所以这么慢，是因为他要对每一个候选区（object proposa
 
 # 结构
 
-![img](https://wx4.sinaimg.cn/large/69d4185bly1fy1wosr1tuj20go06mdh5.jpg)
+![img](assets/69d4185bly1fy1wosr1tuj20go06mdh5.jpg)
 
 他把整个图片和一组候选区域（object proposal）作为输入。首先通过几个卷积层和最大池化层在整个图片上产生卷积特征映射（conv feature map）。对于每个候选区域，RoI（region of interest） 池化层从特征映射（feature map）中提取固定长度的特征向量（feature vector）。每个特征向量被喂入全卷积序列层中，最终全卷积序列层会分成两股，一个是在 K 个类别和全方位的背景类上进行评估的 softmax，和另一个对每一个 K 类产生 4 个实数值，这四个值用来修正 bounding-box 的位置。
 
@@ -35,7 +35,7 @@ R-CNN 之所以这么慢，是因为他要对每一个候选区（object proposa
 
 - 首先，最后一层 max pooling 使用 RoI max pooling 替代，为了适应第一层全连接层（VGG16 最后一层 max pool 的输出为 7×7 ）RoI max pooling 的 H 和 W要和他兼容，即 H×W 为 7×7。
 
-![img](https://wx4.sinaimg.cn/large/69d4185bly1fy1wvapdmgj20gd05t0tc.jpg)
+![img](assets/69d4185bly1fy1wvapdmgj20gd05t0tc.jpg)
 
 - 其次，最后一个全连接层和 softmax 被替换成两个前文描述的子层:
 
@@ -57,7 +57,7 @@ RoI 的具体操作如下，使用 h×w 大小的 RoI窗口划分成 H×W 的子
 
 如一张320×320的图片，经过 VGG16 特征提取，累积的 stride 的为32（经过了5个池化层，每个池化层的 stride 为2），最终的输出为 10×10 大小的特征映射。其中的一个 RoI 在原图大小为 224×224 那么在最终的输出就为 7×7，在 10×10 中坐标为（1，2，7，7）如下图：
 
-![img](https://wx1.sinaimg.cn/large/69d4185bly1fy1x94zp6fj20g4088wg2.jpg)
+![img](assets/69d4185bly1fy1x94zp6fj20g4088wg2.jpg)
 
  因为最终输出的 feature map 的大小为 2×2（H×W），原 h、w 的大小为 7×7，因此每个子窗格的大小为 7/2×7/2 ，可以看到没有得到整数，因此这里就有了两种划分方式一种是舍去小数部分，即每个子窗口的大小为3×3，不舍的则是编程划分成3和4两种长度，然后在每个子窗口中进行 max pooling 操作，如下图：
 

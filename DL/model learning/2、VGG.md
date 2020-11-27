@@ -74,7 +74,7 @@ VGG 训练之所以可以收敛的比 AlexNet 快，是因为：
 
 作者将三个全连接层在此阶段，转成了1个7×7，和 2 个 1×1 的卷积层。。从图2 VGG16结构图中就可以看到，以第一个全连接层为例，要转卷积层，FC6的输入是 7×7×512，输出是4096（也可以看做 1×1×4096），那么就要对输入在尺寸上（宽高）降维（从7×7 降到 1×1）和深度（channel 或者 depth）升维（从512 升到4096）。把7×7降到1×1，使用大小为 7×7的卷积核就好了，卷积核个数设置为4096，即卷积核为7×7×4096（下图中的[7×7×512]×4096 表示有 4096 个 [7×7×512] 这样的卷积核，7×7×4096 是简写形式忽略了输入的深度），经过对输入卷积就得到了最终的 1×1×4096 大小的 feature map。经过转换的网络就没有了全连接层，这样网络就可以接受任意尺寸的输入，而不是像之前之能输入固定大小的输入。转化如下图：
 
-![img](https://wx2.sinaimg.cn/large/69d4185bly1fy1h0qh3yjj20k00aadgu.jpg)
+![img](assets/69d4185bly1fy1h0qh3yjj20k00aadgu.jpg)
 
 # 分类试验
 
@@ -89,7 +89,7 @@ VGG 训练之所以可以收敛的比 AlexNet 快，是因为：
 
 ## 多尺寸评估
 
-![img](https://wx4.sinaimg.cn/large/69d4185bly1fy1h5h46q0j20kg07ajt5.jpg)
+![img](assets/69d4185bly1fy1h5h46q0j20kg07ajt5.jpg)
 
 模型训练时使用固定尺寸的 S ，评估时使用 3 个尺寸，这三个尺寸与训练时的尺寸接近 Q={S-32，S，S+32}。同时，在训练时使用多尺寸，那么在测试时可选择的尺寸范围更广。当训练使用 $S∈[S_{min}, S_{max}]$，那么评估时使用的尺寸范围为 $Q=\{ S_{min}，0.5 * (S_{min} + S_{max})，S_{max} \}$。
 
@@ -97,7 +97,7 @@ VGG 训练之所以可以收敛的比 AlexNet 快，是因为：
 
 ## 多剪裁评估
 
-![img](https://wx3.sinaimg.cn/large/69d4185bly1fy1h8svc24j20iw03y74y.jpg)
+![img](assets/69d4185bly1fy1h8svc24j20iw03y74y.jpg)
 
 可以看到，使用多裁剪方式表现好于密集评估（ dense evaluation），两者结合起来会更好。
 
@@ -151,15 +151,15 @@ VGG 训练之所以可以收敛的比 AlexNet 快，是因为：
 
 首先，需要知道什么是全局池化（global pooling），它其实指的滑动窗口的大小与整个 feature map 的大小一样，这样一整张feature map 只产生一个值。比如一个 4×4 的 feature map 使用传统的池化方法（2×2 + 2s），那么最终产生的 feature map 大小为 2×2 ，如下图：
 
-![img](https://wx1.sinaimg.cn/large/69d4185bly1fy1i05vz6oj20c8062jrg.jpg)
+![img](assets/69d4185bly1fy1i05vz6oj20c8062jrg.jpg)
 
 而如果使用全局池化的话（4×4 + 1s，大小与 feature map 相同），一个feature map 只产生一个值，即输出为 1×1，如下图：
 
-![img](https://wx3.sinaimg.cn/large/69d4185bly1fy1i1lhxkhj20c50610sr.jpg)
+![img](assets/69d4185bly1fy1i1lhxkhj20c50610sr.jpg)
 
 如果前一层有多个feature map 的话，只需要把经过全局池化的结果堆叠起来即可，如下图：
 
-![img](https://wx3.sinaimg.cn/large/69d4185bly1fy1i2civ4tj20gc07owfe.jpg)
+![img](assets/69d4185bly1fy1i2civ4tj20gc07owfe.jpg)
 
 上图，如果使用 Average 池化方法，那么就成为 Global Average Pooling，即 GAP。从而可以总结出，如果输入 feature map 为 W×H×C，那么经过全局池化之后的输出就为 1×1×C。
 
@@ -192,7 +192,7 @@ $$
 其中 $x^{'}_{ij}$ 表示经过 L1或者 L2的值，H 表示图片的高（Height），W 表示宽（Width）， $x_{ij}$ 表示图像第 i行 j 列的像素值。如一个 3×3 的图像，使用 L1与 L2的结果如下图：
 
 
-![img](https://wx4.sinaimg.cn/large/69d4185bly1fy1i7xxf52j20fg0b63yr.jpg)
+![img](assets/69d4185bly1fy1i7xxf52j20fg0b63yr.jpg)
 
 ## 什么是 IoU？
 
@@ -208,6 +208,6 @@ $$
 
 或者写成如下的公式：
 
-![img](https://wx1.sinaimg.cn/large/69d4185bly1fy1icr6dr2j208s057745.jpg)
+![img](assets/69d4185bly1fy1icr6dr2j208s057745.jpg)
 
 可以看到 IoU 的值越大，表明模型的准确度越好，IoU = 1 的时候 DR 与 GT 重合。
