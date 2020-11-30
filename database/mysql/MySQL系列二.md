@@ -119,13 +119,35 @@ B+ 树为了维护索引有序性，在插入新值的时候需要做必要的�
 
 这就是典型的 KV 场景。由于没有其他索引，所以也就不用考虑其他索引的叶子节点大小的问题。这时候我们就要优先考虑上一段提到的“尽量使用主键查询”原则，直接将这个索引设置为主键，可以避免每次查询需要搜索两棵树。
 
+## 问题
 
+对于上面例子中的 InnoDB 表 T，如果你要重建索引 k，你的两个 SQL 语句可以这么写：
+
+```mysql
+alter table T drop index k;
+alter table T add index(k);
+```
+
+如果你要重建主键索引，也可以这么写：
+
+```mysql
+alter table T drop primary key;
+alter table T add primary key(id);
+```
+
+对于上面两个重建索引的方法，你是怎么理解的，如果不合适，有没有更好地方法。
+
+> 之所以要重建索引，是因为索引可能因为删除，或者页分裂等原因，导致数据页有空洞，重建索引的过程会创建一个新的索引，把数据按顺序插入，这样页面的利用率最高，也就是索引更紧凑、更省空间
+
+重建索引 k 的做法是合理的，可以达到省空间的目的。但是，重建主键的过程不合理。不论是删除主键还是创建主键，都会将整个表重建。所以连着执行这两个语句的话，第一个语句就白做了。这两个语句，你可以用这个语句代替 ： `alter table T engine=InnoDB`，改语句在innobDB里会触发mysql重建该表，并进行碎片处理。
 
 
 
 # 深入浅出索引（下）
 
 - [被leader喷对MySQL索引一无所知的我是如何一小时掌握MySQL索引](https://juejin.cn/post/6900129302285647879)
+- [MySQL InnoDB not releasing disk space after deleting data rows from table](https://stackoverflow.com/questions/1270944/mysql-innodb-not-releasing-disk-space-after-deleting-data-rows-from-table)
+- [Howto: Clean a mysql InnoDB storage engine?](https://stackoverflow.com/questions/3927690/howto-clean-a-mysql-innodb-storage-engine)
 
 首先看如下的一个问题：
 
@@ -245,6 +267,38 @@ mysql> select * from tuser where name like '张%' and age=10 and ismale=1;
 *有索引下推的执行流程*
 
 这两个图里面，每一个虚线箭头表示回表一次。上图中，InnoDB 并不会去看 age 的值，只是按顺序把“name 第一个字是’张’”的记录一条条取出来回表。因此，需要回表 4 次。下图中，InnoDB 在 (name,age) 索引内部就判断了 age 是否等于 10，对于不等于 10 的记录，直接判断并跳过。在我们的这个例子中，只需要对 ID4、ID5 这两条记录回表取数据判断，就只需要回表 2 次。
+
+## 问题
+
+主键索引也可以有多个字段，DBA 小吕在入职新公司的时候，就发现自己接手维护的库里面，有这么一个表，表结构定义类似这样的：
+
+```mysql
+CREATE TABLE `geek` (
+  `a` int(11) NOT NULL,
+  `b` int(11) NOT NULL,
+  `c` int(11) NOT NULL,
+  `d` int(11) NOT NULL,
+  PRIMARY KEY (`a`,`b`),
+  KEY `c` (`c`),
+  KEY `ca` (`c`,`a`),
+  KEY `cb` (`c`,`b`)
+) ENGINE=InnoDB;
+```
+
+但是，既然主键包含了 a、b 这两个字段，那意味着单独在字段 c 上创建一个索引，就已经包含了三个字段了呀，为什么要创建“ca”“cb”这两个索引？
+
+同事告诉他，是因为他们的业务里面有这样的两种语句：
+
+```mysql
+select * from geek where c=N order by a limit 1;
+select * from geek where c=N order by b limit 1;
+```
+
+这位同事的解释对吗，为了这两个查询模式，这两个索引是否都是必须的？为什么呢？
+
+
+
+
 
 
 
