@@ -146,6 +146,7 @@ alter table T add primary key(id);
 # 深入浅出索引（下）
 
 - [被leader喷对MySQL索引一无所知的我是如何一小时掌握MySQL索引](https://juejin.cn/post/6900129302285647879)
+- [《高性能MySQL》读后感——聚簇索引](https://www.jianshu.com/p/54c6d5db4fe6)
 - [MySQL InnoDB not releasing disk space after deleting data rows from table](https://stackoverflow.com/questions/1270944/mysql-innodb-not-releasing-disk-space-after-deleting-data-rows-from-table)
 - [Howto: Clean a mysql InnoDB storage engine?](https://stackoverflow.com/questions/3927690/howto-clean-a-mysql-innodb-storage-engine)
 
@@ -296,15 +297,44 @@ select * from geek where c=N order by b limit 1;
 
 这位同事的解释对吗，为了这两个查询模式，这两个索引是否都是必须的？为什么呢？
 
+答案如下：表总的数据记录如下
 
+| a (key) | b (key) | c    | d    |
+| ------- | ------- | ---- | ---- |
+| 1       | 2       | 3    | d    |
+| 1       | 3       | 2    | d    |
+| 1       | 4       | 3    | d    |
+| 2       | 1       | 3    | d    |
+| 2       | 2       | 2    | d    |
+| 2       | 3       | 4    | d    |
 
+主键 a，b 的聚簇索引（索引存储完整数据，“聚簇”表示数据行和相邻的键值紧凑地存储在一起）组织顺序相当于 `order by a,b` ，也就是先按 a 排序，再按 b 排序，c 无序。
 
+索引 `c a` 的组织是先按 c 排序，再按 a 排序，同时记录主键，此时主键只有 b 而没有 a，如下：
 
+| c    | a    | b (key) |
+| ---- | ---- | ------- |
+| 2    | 1    | 3       |
+| 2    | 2    | 2       |
+| 3    | 1    | 2       |
+| 3    | 1    | 4       |
+| 3    | 2    | 1       |
+| 4    | 2    | 3       |
 
+> InnoDB会把主键字段放到索引定义字段后面， 当然同时也会去重。 所以，当主键是(a,b)的时候， 定义为c的索引，实际上是（c,a,b); 定义为(c,a)的索引，实际上是(c,a,b) 你看着加是相同的 ps 定义为(c,b）的索引，实际上是（c,b,a)
 
+`c` 这个索引就和 `c a` 这个索引的数据是一模一样的。 
 
+索引 `c b` 的组织是先按 c 排序，在按 b 排序，同时记录主键
 
-
+| c    | b    | a (key) |
+| ---- | ---- | ------- |
+| 2    | 2    | 2       |
+| 2    | 3    | 1       |
+| 3    | 1    | 2       |
+| 3    | 2    | 1       |
+| 3    | 4    | 1       |
+| 4    | 3    | 2       |
 
 
 
