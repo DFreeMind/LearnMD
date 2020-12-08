@@ -195,3 +195,118 @@ select * from t where k in (k1, k2)
 从下面这张图中可以看到，change buffer 一开始是写内存的，那么如果这个时候机器掉电重启，会不会导致 change buffer 丢失呢？change buffer 丢了之后，再从磁盘读入数据可就没有了 merge 过程，就等于是数据丢失了。会不会出现这种情况呢？
 
 ![image-20201206103325562](assets/image-20201206103325562.png)
+
+
+
+# MySQL索引选择
+
+在MySQL中，MySQL会决定使用哪种索引。有时候我们会遇到，一条本来可以执行得很快的语句，却由于 MySQL 选错了索引，而导致执行速度变得很慢？
+
+首先如下的一个例子，创建一个表，里面 a、b 两个字段，并分别创建上索引：
+
+```mysql
+CREATE TABLE `t` (
+  `id` int(11) NOT NULL,
+  `a` int(11) DEFAULT NULL,
+  `b` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `a` (`a`),
+  KEY `b` (`b`)
+) ENGINE=InnoDB；
+```
+
+之后在表里面插入 10万条数据，取值按整数递增，即：(1,1,1)，(2,2,2)，(3,3,3) 直到 (100000,100000,100000)。
+
+数据生成可以按照下面存储过程方式生成：
+
+```mysql
+delimiter ;;
+create procedure idata()
+begin
+  declare i int;
+  set i=1;
+  while(i<=100000)do
+    insert into t values(i, i, i);
+    set i=i+1;
+  end while;
+end;;
+delimiter ;
+call idata();
+```
+
+接下来我们分析一条SQL：
+
+```sql
+mysql> select * from t where a between 10000 and 20000;
+```
+
+我们看下这条SQL对索引的使用
+
+![img](assets/2cfce769551c6eac9bfbee0563d48fe3.png)
+
+可以看大 key 字段的值为 a，表示优化器使用了索引 a。我们做如下的操作：
+
+![img](assets/1e5ba1c2934d3b2c0d96b210a27e1a1e.png)
+
+*session A 和 session B 的执行流程*
+
+从上面可以看到，session A 启动了一个事务，之后 session B 把数据删除，又调用了 idata 这个存储过程，插入了 10 万行数据。这时候，session B 的查询语句 select * from t where a between 10000 and 20000 就不会再选择索引 a 了。我们可以通过慢查询日志（slow log）来查看一下具体的执行情况。为了做对比，使用 force index(a) 来让优化器强制使用索引 a。实验过程如下：
+
+```mysql
+set long_query_time=0;
+select * from t where a between 10000 and 20000; /*Q1*/
+select * from t force index(a) where a between 10000 and 20000;/*Q2*/
+```
+
+- 第一句，是将慢查询日志的阈值设置为 0，表示这个线程接下来的语句都会被记录入慢查询日志中；
+- 第二句，Q1 是 session B 原来的查询；
+- 第三句，Q2 是加了 force index(a) 来和 session B 原来的查询语句执行情况对比。
+
+查看 mysql 的慢查询设置，以下设置只对当前数据库设置生效，MySQL重启之后无效：
+
+```mysql
+mysql> show variables  like '%slow_query_log%';
++---------------------+------------------------------------------------------+
+| Variable_name       | Value                                                |
++---------------------+------------------------------------------------------+
+| slow_query_log      | OFF                                                  |
+| slow_query_log_file | /usr/local/mysql/data/qimengdudeMacBook-Pro-slow.log |
++---------------------+------------------------------------------------------+
+# 开启慢查询日志
+mysql> set global slow_query_log=1;
+```
+
+慢查询时间设置：
+
+```mysql
+mysql> show variables like 'long_query_time%';
++-----------------+-----------+
+| Variable_name   | Value     |
++-----------------+-----------+
+| long_query_time | 10.000000 |
++-----------------+-----------+
+1 row in set (0.00 sec)
+```
+
+上面三条SQL的慢查询日志如下：
+
+![img](assets/7c58b9c71853b8bba1a8ad5e926de1f6.png)
+
+可以看到，Q1 扫描了 10 万行，显然是走了全表扫描，执行时间是 40 毫秒。Q2 扫描了 10001 行，执行了 21 毫秒。也就是说，我们在没有使用 force index 的时候，MySQL 用错了索引，导致了更长的执行时间。
+
+这个例子对应的是我们平常不断地删除历史数据和新增数据的场景。这时，MySQL 竟然会选错索引，为什么会出现这种情况呢？
+
+## 优化器逻辑
+
+我们知道，选择索引时优化器的工作。而优化器选择索引的目的，是找到一个最优的执行方案，并用最小的代价去执行语句。在数据库里面，扫描行数是影响执行代价的因素之一。扫描的行数越少，意味着访问磁盘数据的次数越少，消耗的 CPU 资源越少。当然，扫描行数并不是唯一的判断标准，优化器还会结合是否使用临时表、是否排序等因素进行综合判断。
+
+> 优化器优化时会考虑的因素： 1.扫描行数 2.是否使用临时表 3. 是否需要排序
+
+**那么，扫描行数如何判断呢？**
+
+MySQL 在真正开始执行语句之前，并不能精确地知道满足这个条件的记录有多少条，而只能根据统计信息来估算记录数。
+
+这个统计信息就是索引的“区分度”。显然，一个索引上不同的值越多，这个索引的区分度就越好。而一个索引上不同的值的个数，我们称之为“基数”（cardinality）。也就是说，这个基数越大，索引的区分度越好。
+
+
+
