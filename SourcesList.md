@@ -74,13 +74,15 @@ Oracle：[High Availability Concepts and Best Practices](https://docs.oracle.com
 
 
 
+# 语言
 
+## 聊天
 
+- [如何解决下载en-core web LG、en-core web SM等时的连接错误问题,spacy,encoreweblgencorewebsm,出现,ConnectionError,失败,情况,方法](https://www.pythonf.cn/read/99547)
 
+- [两种开源聊天机器人的性能测试（一）——ChatterBot](https://www.shangmayuan.com/a/b58824cb78f543cd86d74632.html)
 
-
-
-
+- [做一个基于 chatterbot 的聊天机器人](https://cloud.tencent.com/developer/article/1465377)
 
 
 
